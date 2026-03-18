@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, AlertCircle, Info, RefreshCw, BarChart3 } from 'lucide-react';
+import { Info, RefreshCw } from 'lucide-react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 
 const categories = [
   {
     id: 'curriculum',
     title: 'Curriculum Design',
+    shortTitle: 'Curriculum',
     questions: [
       "Design and outcome-based curriculum aligned with learning outcomes.",
       "Design an outcome-based curriculum integrated with industry-relevant contexts."
@@ -15,6 +16,7 @@ const categories = [
   {
     id: 'pedagogy',
     title: 'Pedagogy & Strategies',
+    shortTitle: 'Pedagogy',
     questions: [
       "Apply appropriate pedagogy/andragogy approaches in curriculum design.",
       "Employ a range of T&L strategies to support effective learning."
@@ -23,6 +25,7 @@ const categories = [
   {
     id: 'assessment',
     title: 'Assessment',
+    shortTitle: 'Assessment',
     questions: [
       "Design and develop valid, reliable assessments to enhance learning.",
       "Implement valid, reliable assessments using diverse methods and tools."
@@ -31,6 +34,7 @@ const categories = [
   {
     id: 'innovation',
     title: 'Innovation & EdTech',
+    shortTitle: 'Innovation',
     questions: [
       "Apply evidence-informed reflective practices to support innovative and responsive T&L.",
       "Leverage EdTech tools to enhance learner engagement."
@@ -39,6 +43,7 @@ const categories = [
   {
     id: 'industry',
     title: 'Industry Integration',
+    shortTitle: 'Industry',
     questions: [
       "Stay informed about latest industry trends and innovations.",
       "Translate industry-relevant developments into effective T&L strategies to enhance learning outcomes."
@@ -77,6 +82,7 @@ export default function App() {
     const q2 = scores[catIndex * 2 + 1];
     return {
       title: cat.title,
+      shortTitle: cat.shortTitle,
       score: q1 + q2,
       max: 10,
       isComplete: q1 > 0 && q2 > 0
@@ -90,236 +96,161 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans pb-32 selection:bg-teal-100 selection:text-teal-900">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-            ES Role Readiness Assessment
-          </h1>
-          <p className="mt-2 text-sm sm:text-base text-slate-500 max-w-2xl leading-relaxed">
-            Please indicate your level of readiness to the statements listed below. 
-            This helps build a profile of your competencies across different areas.
-          </p>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        {/* Info Box */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-blue-50 border border-blue-100 rounded-2xl p-5 mb-8 flex gap-4 items-start shadow-sm"
-        >
-          <Info className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
-          <div className="text-sm text-blue-800 leading-relaxed">
-            <p className="font-medium mb-1">About this assessment</p>
-            <p>
-              This tool helps you reflect on specific competencies. A total indicator of 30+ reflects readiness to explore the ES role. Discuss these results with your reporting officer to align your professional development goals.
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Readiness Profile Dashboard */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 mb-8"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-teal-50 rounded-lg">
-              <BarChart3 className="w-5 h-5 text-teal-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-slate-900">Readiness Profile</h2>
-          </div>
+    <div className="min-h-screen bg-[#FAFAFA] text-slate-800 font-sans selection:bg-indigo-100 selection:text-indigo-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           
-          <div className="flex flex-col md:flex-row gap-8 items-center">
-            <div className="w-full md:w-1/2 h-64 sm:h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart cx="50%" cy="50%" outerRadius="70%" data={categoryScores}>
-                  <PolarGrid stroke="#e2e8f0" />
-                  <PolarAngleAxis dataKey="title" tick={{ fill: '#475569', fontSize: 11, fontWeight: 500 }} />
-                  <PolarRadiusAxis angle={30} domain={[0, 10]} tick={false} axisLine={false} />
-                  <Radar name="Readiness" dataKey="score" stroke="#0d9488" strokeWidth={2} fill="#14b8a6" fillOpacity={0.4} />
-                </RadarChart>
-              </ResponsiveContainer>
-            </div>
-            
-            <div className="w-full md:w-1/2 flex flex-col gap-5">
-              {categoryScores.map((cat, i) => (
-                <div key={i} className="relative">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="font-medium text-slate-700">{cat.title}</span>
-                    <span className="text-slate-500 font-medium">{cat.score > 0 ? `${cat.score}/10` : '-'}</span>
+          {/* Left Column - Sticky Dashboard */}
+          <div className="lg:col-span-4 xl:col-span-4 relative">
+            <div className="lg:sticky lg:top-8 space-y-6">
+              
+              {/* Header */}
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-3">
+                  ES Role Readiness
+                </h1>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  Indicate your level of readiness for the statements to build a profile of your competencies.
+                </p>
+              </div>
+
+              {/* Radar Chart Card */}
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <h2 className="text-sm font-semibold text-slate-900 mb-2">Readiness Profile</h2>
+                <div className="h-64 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart cx="50%" cy="50%" outerRadius="65%" data={categoryScores}>
+                      <PolarGrid stroke="#f1f5f9" />
+                      <PolarAngleAxis dataKey="shortTitle" tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }} />
+                      <PolarRadiusAxis angle={30} domain={[0, 10]} tick={false} axisLine={false} />
+                      <Radar name="Readiness" dataKey="score" stroke="#6366f1" strokeWidth={2} fill="#818cf8" fillOpacity={0.3} />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Progress Card */}
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div className="flex justify-between items-end mb-4">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Assessment Progress</p>
+                    <p className="text-xs text-slate-500 mt-1">{answeredCount} of 10 answered</p>
                   </div>
-                  <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                    <motion.div
-                      className={`h-full ${cat.score >= 8 ? 'bg-teal-500' : cat.score >= 6 ? 'bg-emerald-400' : cat.score >= 4 ? 'bg-amber-400' : 'bg-slate-300'}`}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(cat.score / 10) * 100}%` }}
-                      transition={{ duration: 0.5, ease: "easeOut" }}
-                    />
+                  <div className="text-right">
+                    <span className="text-2xl font-bold text-indigo-600">{totalScore}</span>
+                    <span className="text-xs text-slate-400 block -mt-1">Total Score</span>
                   </div>
                 </div>
-              ))}
+                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-indigo-500 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(answeredCount / 10) * 100}%` }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  />
+                </div>
+                
+                <AnimatePresence>
+                  {isComplete && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                      animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
+                      className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100 overflow-hidden"
+                    >
+                      <p className="text-sm text-indigo-900 font-medium">
+                        {totalScore >= 30 
+                          ? 'You show sufficient overall readiness to explore the ES role.' 
+                          : 'You are developing overall readiness for the ES role.'}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="flex justify-between items-center mt-6 pt-6 border-t border-slate-100">
+                  <button 
+                    onClick={() => setShowResetConfirm(true)} 
+                    className="text-sm text-slate-400 hover:text-red-500 transition-colors flex items-center gap-2 font-medium"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Reset Assessment
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
-        </motion.div>
 
-        {/* Questions List */}
-        <div className="space-y-10">
-          {categories.map((category, catIndex) => (
-            <div key={category.id} className="space-y-4">
-              <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
-                {category.title}
-              </h3>
-              <div className="space-y-4">
-                {category.questions.map((question, qIndex) => {
-                  const globalIndex = catIndex * 2 + qIndex;
-                  return (
-                    <motion.div 
-                      key={globalIndex}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: globalIndex * 0.05 }}
-                      className={`bg-white rounded-2xl p-6 shadow-sm border transition-colors duration-300 ${
-                        scores[globalIndex] > 0 ? 'border-teal-100 ring-1 ring-teal-50' : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      <div className="flex gap-4 mb-6">
-                        <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-semibold shrink-0">
-                          {globalIndex + 1}
-                        </div>
-                        <p className="text-base sm:text-lg font-medium text-slate-800 pt-1">
-                          {question}
-                        </p>
-                      </div>
-
-                      {/* Desktop Scale */}
-                      <div className="hidden sm:flex items-stretch justify-between gap-2">
-                        {scale.map((s) => (
-                          <button
-                            key={s.value}
-                            onClick={() => handleScoreChange(globalIndex, s.value)}
-                            className={`flex-1 flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 ${
-                              scores[globalIndex] === s.value 
-                                ? 'border-teal-500 bg-teal-50 text-teal-700 shadow-sm' 
-                                : 'border-slate-100 bg-slate-50 text-slate-500 hover:border-slate-200 hover:bg-slate-100'
-                            }`}
-                          >
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 font-semibold transition-colors ${
-                              scores[globalIndex] === s.value ? 'bg-teal-500 text-white' : 'bg-white border border-slate-200 group-hover:border-slate-300'
-                            }`}>
-                              {s.value}
-                            </div>
-                            <span className="text-xs text-center font-medium leading-tight px-1">
-                              {s.label}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Mobile Scale */}
-                      <div className="sm:hidden flex flex-col gap-2">
-                        {scale.map((s) => (
-                          <button
-                            key={s.value}
-                            onClick={() => handleScoreChange(globalIndex, s.value)}
-                            className={`w-full flex items-center p-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 ${
-                              scores[globalIndex] === s.value 
-                                ? 'border-teal-500 bg-teal-50 text-teal-700 shadow-sm' 
-                                : 'border-slate-100 bg-slate-50 text-slate-600 hover:border-slate-200'
-                            }`}
-                          >
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold shrink-0 mr-3 transition-colors ${
-                              scores[globalIndex] === s.value ? 'bg-teal-500 text-white' : 'bg-white border border-slate-200'
-                            }`}>
-                              {s.value}
-                            </div>
-                            <span className="text-sm font-medium text-left flex-1">
-                              {s.label}
-                            </span>
-                            {scores[globalIndex] === s.value && (
-                              <CheckCircle2 className="w-5 h-5 text-teal-500 shrink-0" />
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    </motion.div>
-                  );
-                })}
+          {/* Right Column - Questions */}
+          <div className="lg:col-span-8 xl:col-span-8 space-y-10">
+            
+            {/* Info Box */}
+            <div className="bg-indigo-50/50 rounded-3xl p-6 sm:p-8 border border-indigo-100/50 flex gap-4 items-start">
+              <Info className="w-6 h-6 text-indigo-500 shrink-0 mt-0.5" />
+              <div className="text-sm text-indigo-900/80 leading-relaxed">
+                <p className="font-semibold text-indigo-900 mb-1">About this assessment</p>
+                <p>
+                  This tool helps you reflect on specific competencies. A total indicator of 30+ reflects readiness to explore the ES role. Discuss these results with your reporting officer to align your professional development goals.
+                </p>
               </div>
             </div>
-          ))}
-        </div>
-      </main>
 
-      {/* Floating Result Footer */}
-      <AnimatePresence>
-        {answeredCount > 0 && (
-          <motion.div 
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] z-30"
-          >
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-              
-              <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-start">
-                <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Profile Summary</p>
-                  <div className="flex items-center gap-1.5">
-                    {categoryScores.map((cat, i) => (
-                      <div 
-                        key={i} 
-                        className={`h-2.5 w-8 sm:w-10 rounded-full transition-colors duration-500 ${
-                          cat.score >= 8 ? 'bg-teal-500' : 
-                          cat.score >= 6 ? 'bg-emerald-400' : 
-                          cat.score >= 4 ? 'bg-amber-400' : 
-                          cat.score > 0 ? 'bg-slate-300' : 
-                          'bg-slate-100'
-                        }`}
-                        title={`${cat.title}: ${cat.score}/10`}
-                      />
-                    ))}
-                  </div>
+            {categories.map((category, catIndex) => (
+              <section key={category.id} className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <h3 className="text-xl font-semibold text-slate-900">{category.title}</h3>
+                  <div className="h-px flex-1 bg-slate-200"></div>
                 </div>
+                
+                <div className="space-y-6">
+                  {category.questions.map((question, qIndex) => {
+                    const globalIndex = catIndex * 2 + qIndex;
+                    return (
+                      <motion.div 
+                        key={globalIndex}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: globalIndex * 0.05 }}
+                        className={`bg-white rounded-3xl p-6 sm:p-8 shadow-sm border transition-colors duration-300 ${
+                          scores[globalIndex] > 0 ? 'border-indigo-100' : 'border-slate-100 hover:border-slate-200'
+                        }`}
+                      >
+                        <div className="flex gap-4 mb-6">
+                          <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold shrink-0 text-sm">
+                            {globalIndex + 1}
+                          </div>
+                          <p className="text-base sm:text-lg font-medium text-slate-800 pt-1 leading-relaxed">
+                            {question}
+                          </p>
+                        </div>
 
-                <div className="h-10 w-px bg-slate-200 hidden sm:block"></div>
+                        <div className="flex gap-2 sm:gap-3">
+                          {scale.map(s => (
+                            <button
+                              key={s.value}
+                              onClick={() => handleScoreChange(globalIndex, s.value)}
+                              className={`flex-1 flex flex-col items-center justify-center py-3 sm:py-4 px-1 sm:px-2 rounded-2xl transition-all duration-300 ${
+                                scores[globalIndex] === s.value
+                                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200/50'
+                                  : 'bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-700'
+                              }`}
+                            >
+                              <span className="text-lg sm:text-xl font-semibold mb-1">{s.value}</span>
+                              <span className={`text-[10px] sm:text-xs text-center leading-tight px-1 ${scores[globalIndex] === s.value ? 'text-indigo-100' : 'text-slate-400'}`}>
+                                {s.label}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
+          </div>
 
-                {isComplete ? (
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-slate-900 text-sm sm:text-base">
-                      {categoryScores.filter(c => c.score >= 6).length} of 5 Areas Ready
-                    </span>
-                    <span className="text-xs sm:text-sm text-slate-500">
-                      {totalScore >= 30 ? 'Sufficient overall readiness' : 'Developing overall readiness'}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 text-slate-500 text-sm font-medium">
-                    <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin shrink-0"></div>
-                    <span>{10 - answeredCount} remaining</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                <button 
-                  onClick={() => setShowResetConfirm(true)}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Reset
-                </button>
-              </div>
-
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      </div>
 
       {/* Reset Confirmation Modal */}
       <AnimatePresence>
@@ -329,7 +260,7 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl border border-slate-100"
+              className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-xl border border-slate-100"
             >
               <h3 className="text-lg font-semibold text-slate-900 mb-2">Reset Progress?</h3>
               <p className="text-slate-500 mb-6 text-sm">Are you sure you want to clear all your answers? This action cannot be undone.</p>
