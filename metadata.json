@@ -1,0 +1,5 @@
+{
+  "name": "ES Role Readiness Calculator",
+  "description": "A clean, minimalist calculator to assess readiness for the ES role based on 10 competencies.",
+  "requestFramePermissions": []
+}
