@@ -178,41 +178,43 @@ export default function App() {
       {/* Top Navigation / Tabs */}
       <div className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-8">
+          <div className="flex items-center justify-between sm:justify-start sm:gap-8">
             <img 
               src="https://www.np.edu.sg/images/default-source/default-album/img-logo.png?sfvrsn=764583a6_19" 
               alt="NP Logo" 
-              className="h-8 sm:h-10 w-auto"
+              className="h-7 sm:h-10 w-auto"
               referrerPolicy="no-referrer"
             />
-            <div className="flex space-x-8">
+            <div className="flex space-x-1 sm:space-x-8">
               <button
                 onClick={() => {
                   setActiveTab('self');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center gap-2 transition-colors ${
+                className={`py-4 px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-colors ${
                   activeTab === 'self' 
                     ? 'border-indigo-500 text-indigo-600' 
                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                 }`}
               >
-                <UserCircle className="w-5 h-5" />
-                Self-Assessment
+                <UserCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline">Self-Assessment</span>
+                <span className="sm:hidden">Self</span>
               </button>
               <button
                 onClick={() => {
                   setActiveTab('ro');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center gap-2 transition-colors ${
+                className={`py-4 px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-colors ${
                   activeTab === 'ro' 
                     ? 'border-indigo-500 text-indigo-600' 
                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                 }`}
               >
-                <ClipboardCheck className="w-5 h-5" />
-                RO Evaluation
+                <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline">RO Evaluation</span>
+                <span className="sm:hidden">RO</span>
               </button>
             </div>
           </div>
@@ -247,11 +249,11 @@ export default function App() {
                   {/* Radar Chart Card */}
                   <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
                     <h2 className="text-sm font-semibold text-slate-900 mb-2">Readiness Profile</h2>
-                    <div className="h-64 w-full">
+                    <div className="h-56 sm:h-64 w-full">
                       <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart cx="50%" cy="50%" outerRadius="65%" data={categoryScores}>
+                        <RadarChart cx="50%" cy="50%" outerRadius="60%" data={categoryScores}>
                           <PolarGrid stroke="#f1f5f9" />
-                          <PolarAngleAxis dataKey="shortTitle" tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }} />
+                          <PolarAngleAxis dataKey="shortTitle" tick={{ fill: '#64748b', fontSize: 10, fontWeight: 500 }} />
                           <PolarRadiusAxis angle={30} domain={[0, 10]} tick={false} axisLine={false} />
                           <Radar name="Readiness" dataKey="score" stroke="#6366f1" strokeWidth={2} fill="#818cf8" fillOpacity={0.3} />
                         </RadarChart>
@@ -347,28 +349,28 @@ export default function App() {
                                 scores[globalIndex] > 0 ? 'border-indigo-100' : 'border-slate-100 hover:border-slate-200'
                               }`}
                             >
-                              <div className="flex gap-4 mb-6">
-                                <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold shrink-0 text-sm">
+                              <div className="flex gap-3 mb-4 sm:mb-6">
+                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold shrink-0 text-xs sm:text-sm">
                                   {globalIndex + 1}
                                 </div>
-                                <p className="text-base sm:text-lg font-medium text-slate-800 pt-1 leading-relaxed">
+                                <p className="text-sm sm:text-lg font-medium text-slate-800 pt-0.5 sm:pt-1 leading-relaxed">
                                   {question}
                                 </p>
                               </div>
 
-                              <div className="flex gap-2 sm:gap-3">
+                              <div className="flex gap-1 sm:gap-3">
                                 {scale.map(s => (
                                   <button
                                     key={s.value}
                                     onClick={() => handleScoreChange(globalIndex, s.value)}
-                                    className={`flex-1 flex flex-col items-center justify-center py-3 sm:py-4 px-1 sm:px-2 rounded-2xl transition-all duration-300 ${
+                                    className={`flex-1 flex flex-col items-center justify-center py-2 sm:py-4 px-0.5 sm:px-2 rounded-xl sm:rounded-2xl transition-all duration-300 ${
                                       scores[globalIndex] === s.value
                                         ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200/50'
                                         : 'bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-700'
                                     }`}
                                   >
-                                    <span className="text-lg sm:text-xl font-semibold mb-1">{s.value}</span>
-                                    <span className={`text-[10px] sm:text-xs text-center leading-tight px-1 ${scores[globalIndex] === s.value ? 'text-indigo-100' : 'text-slate-400'}`}>
+                                    <span className="text-base sm:text-xl font-semibold mb-0.5 sm:mb-1">{s.value}</span>
+                                    <span className={`text-[8px] sm:text-xs text-center leading-tight px-0.5 ${scores[globalIndex] === s.value ? 'text-indigo-100' : 'text-slate-400'}`}>
                                       {s.label}
                                     </span>
                                   </button>
@@ -474,14 +476,14 @@ export default function App() {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: qIndex * 0.05 }}
                               onClick={() => handleRoScoreToggle(globalIndex)}
-                              className={`group cursor-pointer bg-white rounded-2xl p-4 sm:p-5 shadow-sm border transition-all duration-300 flex items-start gap-4 sm:gap-6 ${
+                              className={`group cursor-pointer bg-white rounded-2xl p-4 sm:p-5 shadow-sm border transition-all duration-300 flex items-start gap-3 sm:gap-6 ${
                                 isDemonstrated 
                                   ? 'border-emerald-200 bg-emerald-50/30' 
                                   : 'border-slate-100 hover:border-amber-200 hover:shadow-md'
                               }`}
                             >
                               <div className="flex-1 pt-0.5">
-                                <p className={`text-sm sm:text-base font-medium leading-relaxed transition-colors ${
+                                <p className={`text-xs sm:text-base font-medium leading-relaxed transition-colors ${
                                   isDemonstrated ? 'text-slate-900' : 'text-slate-700'
                                 }`}>
                                   {globalIndex + 1}. {indicator}
@@ -489,20 +491,20 @@ export default function App() {
                               </div>
 
                               <div className="shrink-0 flex flex-col items-center justify-center">
-                                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors ${
+                                <div className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full transition-colors ${
                                   isDemonstrated 
                                     ? 'bg-emerald-100 text-emerald-700' 
                                     : 'bg-red-50 text-red-600 group-hover:bg-red-100'
                                 }`}>
                                   {isDemonstrated ? (
                                     <>
-                                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                                      <span className="text-xs sm:text-sm font-semibold hidden sm:inline-block">Demonstrated</span>
+                                      <CheckCircle2 className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                                      <span className="text-[10px] sm:text-sm font-semibold hidden sm:inline-block">Demonstrated</span>
                                     </>
                                   ) : (
                                     <>
-                                      <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-                                      <span className="text-xs sm:text-sm font-semibold hidden sm:inline-block">Gap Identified</span>
+                                      <AlertCircle className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                                      <span className="text-[10px] sm:text-sm font-semibold hidden sm:inline-block">Gap Identified</span>
                                     </>
                                   )}
                                 </div>
