@@ -6,20 +6,12 @@ import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Responsi
 const categories = [
   {
     id: 'curriculum',
-    title: 'Curriculum Design',
+    title: 'Curriculum',
     shortTitle: 'Curriculum',
     questions: [
-      "Design and outcome-based curriculum aligned with learning outcomes.",
-      "Design an outcome-based curriculum integrated with industry-relevant contexts."
-    ]
-  },
-  {
-    id: 'pedagogy',
-    title: 'Pedagogy & Strategies',
-    shortTitle: 'Pedagogy',
-    questions: [
-      "Apply appropriate pedagogy/andragogy approaches in curriculum design.",
-      "Employ a range of T&L strategies to support effective learning."
+      "Design an outcome-based curriculum aligned with learning outcomes.",
+      "Design an outcome-based curriculum integrated with industry-relevant contexts.",
+      "Design appropriate pedagogy/andragogy approaches in curriculum design."
     ]
   },
   {
@@ -27,26 +19,37 @@ const categories = [
     title: 'Assessment',
     shortTitle: 'Assessment',
     questions: [
-      "Design and develop valid, reliable assessments to enhance learning.",
-      "Implement valid, reliable assessments using diverse methods and tools."
+      "(Co)Design and implement valid, reliable assessments to enhance learning."
     ]
   },
   {
-    id: 'innovation',
-    title: 'Innovation & EdTech',
-    shortTitle: 'Innovation',
+    id: 'facilitation',
+    title: 'Facilitation of Learning',
+    shortTitle: 'Facilitation',
     questions: [
-      "Apply evidence-informed reflective practices to support innovative and responsive T&L.",
-      "Leverage EdTech tools to enhance learner engagement."
+      "Employ a range of innovative T&L strategies with team to support effective learning.",
+      "(Co)Create a collaborative learning environment to effect innovative change."
     ]
   },
   {
-    id: 'industry',
-    title: 'Industry Integration',
-    shortTitle: 'Industry',
+    id: 'reflective',
+    title: 'Reflective Practice, Data & Tech-enhanced T&L',
+    shortTitle: 'Reflective & Tech',
+    questions: [
+      "Apply evidence-based reflective practices to support innovative and responsive T&L.",
+      "Leverage EdTech tools to enhance learner engagement.",
+      "Apply data and learning analytics for T&L interventions."
+    ]
+  },
+  {
+    id: 'dual',
+    title: 'Dual Professionals',
+    shortTitle: 'Dual Prof',
     questions: [
       "Stay informed about latest industry trends and innovations.",
-      "Translate industry-relevant developments into effective T&L strategies to enhance learning outcomes."
+      "Translate industry-relevant developments into effective T&L strategies to enhance learning outcomes.",
+      "Involved in research and/or professional learning community to effect innovative change.",
+      "Shares innovative practices with others in your school to enhance learning."
     ]
   }
 ];
@@ -104,7 +107,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'self' | 'ro'>('self');
 
   // Self-assessment state
-  const [scores, setScores] = useState<number[]>(Array(10).fill(0));
+  const [scores, setScores] = useState<number[]>(Array(13).fill(0));
   const [isComplete, setIsComplete] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
@@ -132,20 +135,33 @@ export default function App() {
   const answeredCount = scores.filter(s => s > 0).length;
   const roDemonstratedCount = roScores.filter(Boolean).length;
 
-  const categoryScores = categories.map((cat, catIndex) => {
-    const q1 = scores[catIndex * 2];
-    const q2 = scores[catIndex * 2 + 1];
-    return {
-      title: cat.title,
-      shortTitle: cat.shortTitle,
-      score: q1 + q2,
-      max: 10,
-      isComplete: q1 > 0 && q2 > 0
-    };
-  });
+  const categoryScores = (() => {
+    let currentIdx = 0;
+    return categories.map((cat) => {
+      const catQuestions = cat.questions;
+      const catScores = scores.slice(currentIdx, currentIdx + catQuestions.length);
+      const sum = catScores.reduce((a, b) => a + b, 0);
+      const count = catScores.filter(s => s > 0).length;
+      const isComplete = count === catQuestions.length;
+      
+      // Normalize score for radar chart (0-10 scale)
+      // Average score (1-5) * 2 = 2-10 scale. 0 if not answered.
+      const average = count > 0 ? sum / count : 0;
+      const normalizedScore = average * 2;
+
+      currentIdx += catQuestions.length;
+      return {
+        title: cat.title,
+        shortTitle: cat.shortTitle,
+        score: normalizedScore,
+        max: 10,
+        isComplete
+      };
+    });
+  })();
 
   const confirmReset = () => {
-    setScores(Array(10).fill(0));
+    setScores(Array(13).fill(0));
     setShowResetConfirm(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -240,7 +256,7 @@ export default function App() {
                     <div className="flex justify-between items-end mb-4">
                       <div>
                         <p className="text-sm font-semibold text-slate-900">Assessment Progress</p>
-                        <p className="text-xs text-slate-500 mt-1">{answeredCount} of 10 answered</p>
+                        <p className="text-xs text-slate-500 mt-1">{answeredCount} of 13 answered</p>
                       </div>
                       <div className="text-right">
                         <span className="text-2xl font-bold text-indigo-600">{totalScore}</span>
@@ -251,7 +267,7 @@ export default function App() {
                       <motion.div
                         className="h-full bg-indigo-500 rounded-full"
                         initial={{ width: 0 }}
-                        animate={{ width: `${(answeredCount / 10) * 100}%` }}
+                        animate={{ width: `${(answeredCount / 13) * 100}%` }}
                         transition={{ duration: 0.5, ease: "easeOut" }}
                       />
                     </div>
@@ -264,7 +280,7 @@ export default function App() {
                           className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100 overflow-hidden"
                         >
                           <p className="text-sm text-indigo-900 font-medium">
-                            {totalScore >= 30 
+                            {totalScore >= 39 
                               ? 'You show sufficient overall readiness to explore the ES role.' 
                               : 'You are developing overall readiness for the ES role.'}
                           </p>
@@ -295,64 +311,68 @@ export default function App() {
                   <div className="text-sm text-indigo-900/80 leading-relaxed">
                     <p className="font-semibold text-indigo-900 mb-1">About this assessment</p>
                     <p>
-                      This tool helps you reflect on specific competencies. A total indicator of 30+ reflects readiness to explore the ES role. Discuss these results with your reporting officer to align your professional development goals.
+                      This tool helps you reflect on specific competencies. A total indicator of 39+ reflects readiness to explore the ES role. Discuss these results with your reporting officer to align your professional development goals.
                     </p>
                   </div>
                 </div>
 
-                {categories.map((category, catIndex) => (
-                  <section key={category.id} className="space-y-6">
-                    <div className="flex items-center gap-4">
-                      <h3 className="text-xl font-semibold text-slate-900">{category.title}</h3>
-                      <div className="h-px flex-1 bg-slate-200"></div>
-                    </div>
-                    
-                    <div className="space-y-6">
-                      {category.questions.map((question, qIndex) => {
-                        const globalIndex = catIndex * 2 + qIndex;
-                        return (
-                          <motion.div 
-                            key={globalIndex}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: globalIndex * 0.05 }}
-                            className={`bg-white rounded-3xl p-6 sm:p-8 shadow-sm border transition-colors duration-300 ${
-                              scores[globalIndex] > 0 ? 'border-indigo-100' : 'border-slate-100 hover:border-slate-200'
-                            }`}
-                          >
-                            <div className="flex gap-4 mb-6">
-                              <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold shrink-0 text-sm">
-                                {globalIndex + 1}
+                {categories.map((category, catIndex) => {
+                  const startIndex = categories.slice(0, catIndex).reduce((acc, cat) => acc + cat.questions.length, 0);
+                  
+                  return (
+                    <section key={category.id} className="space-y-6">
+                      <div className="flex items-center gap-4">
+                        <h3 className="text-xl font-semibold text-slate-900">{category.title}</h3>
+                        <div className="h-px flex-1 bg-slate-200"></div>
+                      </div>
+                      
+                      <div className="space-y-6">
+                        {category.questions.map((question, qIndex) => {
+                          const globalIndex = startIndex + qIndex;
+                          return (
+                            <motion.div 
+                              key={globalIndex}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: globalIndex * 0.05 }}
+                              className={`bg-white rounded-3xl p-6 sm:p-8 shadow-sm border transition-colors duration-300 ${
+                                scores[globalIndex] > 0 ? 'border-indigo-100' : 'border-slate-100 hover:border-slate-200'
+                              }`}
+                            >
+                              <div className="flex gap-4 mb-6">
+                                <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold shrink-0 text-sm">
+                                  {globalIndex + 1}
+                                </div>
+                                <p className="text-base sm:text-lg font-medium text-slate-800 pt-1 leading-relaxed">
+                                  {question}
+                                </p>
                               </div>
-                              <p className="text-base sm:text-lg font-medium text-slate-800 pt-1 leading-relaxed">
-                                {question}
-                              </p>
-                            </div>
 
-                            <div className="flex gap-2 sm:gap-3">
-                              {scale.map(s => (
-                                <button
-                                  key={s.value}
-                                  onClick={() => handleScoreChange(globalIndex, s.value)}
-                                  className={`flex-1 flex flex-col items-center justify-center py-3 sm:py-4 px-1 sm:px-2 rounded-2xl transition-all duration-300 ${
-                                    scores[globalIndex] === s.value
-                                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200/50'
-                                      : 'bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-700'
-                                  }`}
-                                >
-                                  <span className="text-lg sm:text-xl font-semibold mb-1">{s.value}</span>
-                                  <span className={`text-[10px] sm:text-xs text-center leading-tight px-1 ${scores[globalIndex] === s.value ? 'text-indigo-100' : 'text-slate-400'}`}>
-                                    {s.label}
-                                  </span>
-                                </button>
-                              ))}
-                            </div>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  </section>
-                ))}
+                              <div className="flex gap-2 sm:gap-3">
+                                {scale.map(s => (
+                                  <button
+                                    key={s.value}
+                                    onClick={() => handleScoreChange(globalIndex, s.value)}
+                                    className={`flex-1 flex flex-col items-center justify-center py-3 sm:py-4 px-1 sm:px-2 rounded-2xl transition-all duration-300 ${
+                                      scores[globalIndex] === s.value
+                                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200/50'
+                                        : 'bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-700'
+                                    }`}
+                                  >
+                                    <span className="text-lg sm:text-xl font-semibold mb-1">{s.value}</span>
+                                    <span className={`text-[10px] sm:text-xs text-center leading-tight px-1 ${scores[globalIndex] === s.value ? 'text-indigo-100' : 'text-slate-400'}`}>
+                                      {s.label}
+                                    </span>
+                                  </button>
+                                ))}
+                              </div>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  );
+                })}
               </div>
             </motion.div>
           ) : (
