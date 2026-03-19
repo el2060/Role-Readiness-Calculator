@@ -178,35 +178,43 @@ export default function App() {
       {/* Top Navigation / Tabs */}
       <div className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
-            <button
-              onClick={() => {
-                setActiveTab('self');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center gap-2 transition-colors ${
-                activeTab === 'self' 
-                  ? 'border-indigo-500 text-indigo-600' 
-                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-              }`}
-            >
-              <UserCircle className="w-5 h-5" />
-              Self-Assessment
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab('ro');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center gap-2 transition-colors ${
-                activeTab === 'ro' 
-                  ? 'border-indigo-500 text-indigo-600' 
-                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-              }`}
-            >
-              <ClipboardCheck className="w-5 h-5" />
-              RO Evaluation
-            </button>
+          <div className="flex items-center gap-8">
+            <img 
+              src="https://www.np.edu.sg/images/default-source/default-album/img-logo.png?sfvrsn=764583a6_19" 
+              alt="NP Logo" 
+              className="h-8 sm:h-10 w-auto"
+              referrerPolicy="no-referrer"
+            />
+            <div className="flex space-x-8">
+              <button
+                onClick={() => {
+                  setActiveTab('self');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center gap-2 transition-colors ${
+                  activeTab === 'self' 
+                    ? 'border-indigo-500 text-indigo-600' 
+                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                }`}
+              >
+                <UserCircle className="w-5 h-5" />
+                Self-Assessment
+              </button>
+              <button
+                onClick={() => {
+                  setActiveTab('ro');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center gap-2 transition-colors ${
+                  activeTab === 'ro' 
+                    ? 'border-indigo-500 text-indigo-600' 
+                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                }`}
+              >
+                <ClipboardCheck className="w-5 h-5" />
+                RO Evaluation
+              </button>
+            </div>
           </div>
         </div>
       </div>
