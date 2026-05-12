@@ -4,10 +4,844 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ES Role Readiness</title>
+    <style>
+      .rr-app,
+      .rr-app * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #f8fafc;
+        color: #0f172a;
+        font-family: Arial, Helvetica, sans-serif;
+        line-height: 1.5;
+      }
+
+      .rr-app {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 24px 16px 40px;
+      }
+
+      .rr-header {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        padding: 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      }
+
+      .rr-brand {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .rr-brand-copy {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .rr-logo {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      .rr-brand h1 {
+        margin: 0;
+        font-size: 30px;
+        line-height: 1.1;
+      }
+
+      .rr-brand p {
+        margin: 6px 0 0;
+        color: #475569;
+        font-size: 14px;
+      }
+
+      .rr-tabs {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .rr-tab-button,
+      .rr-score-button,
+      .rr-reset-button,
+      .rr-indicator-button {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #334155;
+        cursor: pointer;
+        font: inherit;
+      }
+
+      .rr-tab-button {
+        padding: 12px 18px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+
+      .rr-tab-button.rr-active {
+        background: #4f46e5;
+        border-color: #4f46e5;
+        color: #ffffff;
+      }
+
+      .rr-panel[hidden] {
+        display: none !important;
+      }
+
+      .rr-layout {
+        display: grid;
+        grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+
+      .rr-stack {
+        display: grid;
+        gap: 18px;
+      }
+
+      .rr-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+      }
+
+      .rr-card h2,
+      .rr-card h3,
+      .rr-card h4,
+      .rr-section-title {
+        margin: 0 0 10px;
+        color: #0f172a;
+      }
+
+      .rr-help {
+        background: #eef2ff;
+        border-color: #c7d2fe;
+      }
+
+      .rr-help.ro {
+        background: #fff7ed;
+        border-color: #fed7aa;
+      }
+
+      .rr-help p,
+      .rr-card p,
+      .rr-question-text,
+      .rr-category-caption {
+        margin: 0;
+        color: #334155;
+      }
+
+      .rr-progress-meta,
+      .rr-progress-row {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .rr-progress-row {
+        align-items: center;
+        margin-top: 16px;
+      }
+
+      .rr-progress-label {
+        color: #475569;
+        font-size: 14px;
+      }
+
+      .rr-progress-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #4f46e5;
+        line-height: 1;
+      }
+
+      .rr-ro-progress-value {
+        color: #059669;
+      }
+
+      .rr-progress-track {
+        width: 100%;
+        height: 10px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        overflow: hidden;
+        margin-top: 16px;
+      }
+
+      .rr-progress-fill {
+        width: 0;
+        height: 100%;
+        background: #4f46e5;
+        border-radius: 999px;
+      }
+
+      .rr-progress-fill.ro {
+        background: #10b981;
+      }
+
+      .rr-summary-message {
+        margin-top: 16px;
+        padding: 14px;
+        border-radius: 16px;
+        background: #eef2ff;
+        color: #312e81;
+        font-weight: 700;
+        display: none;
+      }
+
+      .rr-chart {
+        width: 100%;
+        max-width: 320px;
+        display: block;
+        margin: 12px auto 0;
+      }
+
+      .rr-question-list,
+      .rr-indicator-list {
+        display: grid;
+        gap: 16px;
+      }
+
+      .rr-category-block {
+        display: grid;
+        gap: 14px;
+      }
+
+      .rr-category-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .rr-category-head h3 {
+        margin: 0;
+        font-size: 22px;
+      }
+
+      .rr-divider {
+        flex: 1;
+        height: 1px;
+        background: #cbd5e1;
+      }
+
+      .rr-question-card,
+      .rr-indicator-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 22px;
+        padding: 18px;
+        background: #ffffff;
+      }
+
+      .rr-question-card.rr-answered {
+        border-color: #c7d2fe;
+        background: #fafaff;
+      }
+
+      .rr-question-header {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        margin-bottom: 16px;
+      }
+
+      .rr-question-number {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: #eef2ff;
+        color: #4338ca;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .rr-score-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .rr-score-button {
+        border-radius: 16px;
+        padding: 12px 6px;
+        min-height: 82px;
+      }
+
+      .rr-score-button strong {
+        display: block;
+        font-size: 20px;
+        margin-bottom: 4px;
+      }
+
+      .rr-score-button span {
+        display: block;
+        font-size: 11px;
+        line-height: 1.3;
+        color: #64748b;
+      }
+
+      .rr-score-button.rr-selected {
+        background: #4f46e5;
+        border-color: #4f46e5;
+        color: #ffffff;
+      }
+
+      .rr-score-button.rr-selected span {
+        color: #e0e7ff;
+      }
+
+      .rr-indicator-card {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+
+      .rr-indicator-card.rr-met {
+        border-color: #a7f3d0;
+        background: #ecfdf5;
+      }
+
+      .rr-indicator-copy {
+        flex: 1;
+      }
+
+      .rr-indicator-index {
+        font-weight: 700;
+        color: #0f172a;
+        margin-right: 6px;
+      }
+
+      .rr-indicator-button {
+        min-width: 132px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        font-weight: 700;
+        color: #b91c1c;
+        background: #fef2f2;
+        border-color: #fecaca;
+      }
+
+      .rr-indicator-button.rr-selected {
+        color: #065f46;
+        background: #d1fae5;
+        border-color: #6ee7b7;
+      }
+
+      .rr-reset-button {
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-weight: 700;
+      }
+
+      .rr-small-note {
+        margin-top: 12px;
+        font-size: 12px;
+        color: #64748b;
+      }
+
+      @media (max-width: 900px) {
+        .rr-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .rr-brand h1 {
+          font-size: 24px;
+        }
+
+        .rr-score-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .rr-score-grid .rr-score-button:last-child {
+          grid-column: 1 / -1;
+        }
+
+        .rr-indicator-card {
+          flex-direction: column;
+        }
+
+        .rr-indicator-button {
+          width: 100%;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div class="rr-app">
+      <div class="rr-header">
+        <div class="rr-brand">
+          <div class="rr-brand-copy">
+            <div class="rr-logo">NP</div>
+            <div>
+              <h1>ES Role Readiness</h1>
+              <p>Single-file assessment that can be opened directly or pasted into a Brightspace HTML/code editor.</p>
+            </div>
+          </div>
+          <div class="rr-tabs" role="tablist" aria-label="Assessment modes">
+            <button class="rr-tab-button rr-active" type="button" data-panel="self" aria-selected="true">Self-Assessment</button>
+            <button class="rr-tab-button" type="button" data-panel="ro" aria-selected="false">RO Evaluation</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="rr-self-panel" class="rr-panel">
+        <div class="rr-layout">
+          <div class="rr-stack">
+            <div class="rr-card">
+              <h2>Readiness Profile</h2>
+              <p class="rr-category-caption">Average readiness by category, scaled to 10 points.</p>
+              <svg id="rr-radar-chart" class="rr-chart" viewBox="0 0 320 320" role="img" aria-label="Readiness radar chart"></svg>
+            </div>
+            <div class="rr-card">
+              <div class="rr-progress-meta">
+                <div>
+                  <h3>Assessment Progress</h3>
+                  <div id="rr-self-progress-label" class="rr-progress-label">0 of 13 answered</div>
+                </div>
+                <div>
+                  <div id="rr-self-total" class="rr-progress-value">0</div>
+                  <div class="rr-progress-label">Total Score</div>
+                </div>
+              </div>
+              <div class="rr-progress-track">
+                <div id="rr-self-progress-fill" class="rr-progress-fill"></div>
+              </div>
+              <div id="rr-self-message" class="rr-summary-message"></div>
+              <div class="rr-progress-row">
+                <span class="rr-progress-label">Clear all self-assessment answers.</span>
+                <button id="rr-reset-self" class="rr-reset-button" type="button">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="rr-stack">
+            <div class="rr-card rr-help">
+              <h3>About this assessment</h3>
+              <p>This tool helps you reflect on specific competencies. A total indicator of 39+ reflects readiness to explore the ES role. Discuss the results with your reporting officer to align professional development goals.</p>
+            </div>
+            <div id="rr-self-content" class="rr-question-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="rr-ro-panel" class="rr-panel" hidden>
+        <div class="rr-layout">
+          <div class="rr-stack">
+            <div class="rr-card">
+              <div class="rr-progress-meta">
+                <div>
+                  <h3>Demonstrated Indicators</h3>
+                  <div id="rr-ro-progress-label" class="rr-progress-label">0 of 20 met</div>
+                </div>
+                <div>
+                  <div id="rr-ro-total" class="rr-progress-value rr-ro-progress-value">0%</div>
+                  <div class="rr-progress-label">Completion</div>
+                </div>
+              </div>
+              <div class="rr-progress-track">
+                <div id="rr-ro-progress-fill" class="rr-progress-fill ro"></div>
+              </div>
+              <div class="rr-progress-row">
+                <span class="rr-progress-label">Clear all RO evaluation selections.</span>
+                <button id="rr-reset-ro" class="rr-reset-button" type="button">Reset</button>
+              </div>
+            </div>
+            <div class="rr-card">
+              <h3>How to use</h3>
+              <p>Mark indicators as demonstrated when the candidate has already shown the behaviour. Any item left unselected highlights a potential gap for future development.</p>
+              <div class="rr-small-note">This version avoids external frameworks, build steps, and CDN assets so it stays portable for Brightspace-friendly HTML delivery.</div>
+            </div>
+          </div>
+
+          <div class="rr-stack">
+            <div class="rr-card rr-help ro">
+              <h3>Guide for Reporting Officers</h3>
+              <p>Use these indicators to identify gaps. Change each indicator to <strong>Demonstrated</strong> when it has been observed. Items left as gaps indicate areas where the candidate may need more training or opportunities before applying for the ES role.</p>
+            </div>
+            <div id="rr-ro-content" class="rr-indicator-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var categories = [
+          {
+            id: 'curriculum',
+            title: 'Curriculum',
+            shortTitle: 'Curriculum',
+            questions: [
+              'Design an outcome-based curriculum aligned with learning outcomes.',
+              'Design an outcome-based curriculum integrated with industry-relevant contexts.',
+              'Design appropriate pedagogy/andragogy approaches in curriculum design.'
+            ]
+          },
+          {
+            id: 'assessment',
+            title: 'Assessment',
+            shortTitle: 'Assessment',
+            questions: [
+              '(Co)Design and implement valid, reliable assessments to enhance learning.'
+            ]
+          },
+          {
+            id: 'facilitation',
+            title: 'Facilitation of Learning',
+            shortTitle: 'Facilitation',
+            questions: [
+              'Employ a range of innovative T&L strategies with team to support effective learning.',
+              '(Co)Create a collaborative learning environment to effect innovative change.'
+            ]
+          },
+          {
+            id: 'reflective',
+            title: 'Reflective Practice, Data & Tech-enhanced T&L',
+            shortTitle: 'Reflective & Tech',
+            questions: [
+              'Apply evidence-based reflective practices to support innovative and responsive T&L.',
+              'Leverage EdTech tools to enhance learner engagement.',
+              'Apply data and learning analytics for T&L interventions.'
+            ]
+          },
+          {
+            id: 'dual',
+            title: 'Dual Professionals',
+            shortTitle: 'Dual Prof',
+            questions: [
+              'Stay informed about latest industry trends and innovations.',
+              'Translate industry-relevant developments into effective T&L strategies to enhance learning outcomes.',
+              'Involved in research and/or professional learning community to effect innovative change.',
+              'Shares innovative practices with others in your school to enhance learning.'
+            ]
+          }
+        ];
+
+        var roCategories = [
+          {
+            id: 'innovation',
+            title: 'A Track Record of Innovation',
+            indicators: [
+              'Leads/Contributes to innovative T&L projects.',
+              'Pilots new pedagogical approaches to enhance student learning outcomes.',
+              'Integrates EdTech tools into curriculum to adapt to diverse learners\' needs and contexts.',
+              'Explores innovative approaches/assessment design to transform teaching practices.',
+              'Showcases innovative work in sharing sessions, COPs and/or conference.'
+            ]
+          },
+          {
+            id: 'pedagogy',
+            title: 'A Passion for Pedagogy',
+            indicators: [
+              'Demonstrates a deep interest in pedagogical development (e.g. active learning).',
+              'Applies reflective practices constantly to improve T&L effectiveness (e.g. uses data to inform practices).',
+              'Responds to feedback positively to improve T&L (student, peer, and/or lesson observation).',
+              'Proactively participates in professional development to improve teaching and learning.',
+              'Demonstrates effective pedagogical practices during lesson observations (e.g. meets or exceeds learning outcomes).',
+              'Invites colleagues to participate in lesson observations or co-teaching to enhance teaching and learning excellence.',
+              'Aligns curriculum and/or teaching practices with industry needs.',
+              'Designs and integrates EdTech tools to facilitate active learning.',
+              'Assesses the impact of technology-enhanced tools using data analytics.',
+              'Receives recognition through teaching-related awards.',
+              'Earns constantly high MES-SET scores and/or positive student feedback.'
+            ]
+          },
+          {
+            id: 'mentor',
+            title: 'The Heart of a Mentor',
+            indicators: [
+              'Collaborates effectively with colleagues on T&L initiatives.',
+              'Supports peers by sharing effective teaching practices and resources.',
+              'Actively helps strengthen T&L capabilities within the team or school (e.g. curate and share good teaching strategies).',
+              'Showcases innovative work in sharing sessions, COPs, or conferences.'
+            ]
+          }
+        ];
+
+        var scale = [
+          { value: 1, label: 'Not Ready Yet' },
+          { value: 2, label: 'Emerging Readiness' },
+          { value: 3, label: 'Moderately Ready' },
+          { value: 4, label: 'Ready' },
+          { value: 5, label: 'Highly Ready' }
+        ];
+
+        var selfScores = new Array(13).fill(0);
+        var roScores = new Array(20).fill(false);
+
+        var selfContent = document.getElementById('rr-self-content');
+        var roContent = document.getElementById('rr-ro-content');
+        var selfPanel = document.getElementById('rr-self-panel');
+        var roPanel = document.getElementById('rr-ro-panel');
+        var selfProgressLabel = document.getElementById('rr-self-progress-label');
+        var selfTotal = document.getElementById('rr-self-total');
+        var selfProgressFill = document.getElementById('rr-self-progress-fill');
+        var selfMessage = document.getElementById('rr-self-message');
+        var roProgressLabel = document.getElementById('rr-ro-progress-label');
+        var roTotal = document.getElementById('rr-ro-total');
+        var roProgressFill = document.getElementById('rr-ro-progress-fill');
+        var radarChart = document.getElementById('rr-radar-chart');
+        var tabButtons = document.querySelectorAll('.rr-tab-button');
+
+        function escapeHtml(text) {
+          return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        }
+
+        function renderSelfQuestions() {
+          var html = '';
+          var questionIndex = 0;
+
+          categories.forEach(function (category) {
+            html += '<section class="rr-category-block">';
+            html += '<div class="rr-category-head"><h3>' + escapeHtml(category.title) + '</h3><div class="rr-divider"></div></div>';
+
+            category.questions.forEach(function (question) {
+              var selectedValue = selfScores[questionIndex];
+              html += '<div class="rr-question-card' + (selectedValue ? ' rr-answered' : '') + '">';
+              html += '<div class="rr-question-header">';
+              html += '<div class="rr-question-number">' + (questionIndex + 1) + '</div>';
+              html += '<p class="rr-question-text">' + escapeHtml(question) + '</p>';
+              html += '</div>';
+              html += '<div class="rr-score-grid">';
+
+              scale.forEach(function (option) {
+                var selectedClass = selectedValue === option.value ? ' rr-selected' : '';
+                html += '<button type="button" class="rr-score-button' + selectedClass + '" data-question-index="' + questionIndex + '" data-score-value="' + option.value + '" aria-pressed="' + (selectedValue === option.value) + '">';
+                html += '<strong>' + option.value + '</strong>';
+                html += '<span>' + escapeHtml(option.label) + '</span>';
+                html += '</button>';
+              });
+
+              html += '</div></div>';
+              questionIndex += 1;
+            });
+
+            html += '</section>';
+          });
+
+          selfContent.innerHTML = html;
+        }
+
+        function renderRoIndicators() {
+          var html = '';
+          var indicatorIndex = 0;
+
+          roCategories.forEach(function (category) {
+            html += '<section class="rr-category-block">';
+            html += '<div class="rr-category-head"><h3>' + escapeHtml(category.title) + '</h3><div class="rr-divider"></div></div>';
+
+            category.indicators.forEach(function (indicator) {
+              var demonstrated = roScores[indicatorIndex];
+              html += '<div class="rr-indicator-card' + (demonstrated ? ' rr-met' : '') + '">';
+              html += '<div class="rr-indicator-copy"><p><span class="rr-indicator-index">' + (indicatorIndex + 1) + '.</span>' + escapeHtml(indicator) + '</p></div>';
+              html += '<button type="button" class="rr-indicator-button' + (demonstrated ? ' rr-selected' : '') + '" data-indicator-index="' + indicatorIndex + '" aria-pressed="' + demonstrated + '">';
+              html += demonstrated ? 'Demonstrated' : 'Gap Identified';
+              html += '</button></div>';
+              indicatorIndex += 1;
+            });
+
+            html += '</section>';
+          });
+
+          roContent.innerHTML = html;
+        }
+
+        function getCategoryScores() {
+          var currentIndex = 0;
+          return categories.map(function (category) {
+            var categoryAnswers = selfScores.slice(currentIndex, currentIndex + category.questions.length);
+            var answered = categoryAnswers.filter(function (score) {
+              return score > 0;
+            });
+            var average = answered.length ? answered.reduce(function (sum, value) {
+              return sum + value;
+            }, 0) / answered.length : 0;
+            currentIndex += category.questions.length;
+            return {
+              shortTitle: category.shortTitle,
+              score: average * 2
+            };
+          });
+        }
+
+        function createRadarPoint(index, total, radius, centerX, centerY) {
+          var angle = ((Math.PI * 2) / total) * index - Math.PI / 2;
+          return {
+            x: centerX + Math.cos(angle) * radius,
+            y: centerY + Math.sin(angle) * radius
+          };
+        }
+
+        function updateRadarChart() {
+          var data = getCategoryScores();
+          var total = data.length;
+          var centerX = 160;
+          var centerY = 160;
+          var outerRadius = 98;
+          var svg = '';
+
+          for (var level = 1; level <= 5; level += 1) {
+            var gridRadius = (outerRadius / 5) * level;
+            var gridPoints = [];
+            for (var g = 0; g < total; g += 1) {
+              var gridPoint = createRadarPoint(g, total, gridRadius, centerX, centerY);
+              gridPoints.push(gridPoint.x.toFixed(2) + ',' + gridPoint.y.toFixed(2));
+            }
+            svg += '<polygon points="' + gridPoints.join(' ') + '" fill="none" stroke="#dbeafe" stroke-width="1"></polygon>';
+          }
+
+          for (var a = 0; a < total; a += 1) {
+            var axisPoint = createRadarPoint(a, total, outerRadius, centerX, centerY);
+            svg += '<line x1="' + centerX + '" y1="' + centerY + '" x2="' + axisPoint.x.toFixed(2) + '" y2="' + axisPoint.y.toFixed(2) + '" stroke="#cbd5e1" stroke-width="1"></line>';
+          }
+
+          var valuePoints = [];
+          for (var i = 0; i < total; i += 1) {
+            var valueRadius = (data[i].score / 10) * outerRadius;
+            var valuePoint = createRadarPoint(i, total, valueRadius, centerX, centerY);
+            valuePoints.push(valuePoint.x.toFixed(2) + ',' + valuePoint.y.toFixed(2));
+          }
+          svg += '<polygon points="' + valuePoints.join(' ') + '" fill="#818cf8" fill-opacity="0.28" stroke="#4f46e5" stroke-width="3"></polygon>';
+
+          for (var j = 0; j < total; j += 1) {
+            var markerRadius = (data[j].score / 10) * outerRadius;
+            var markerPoint = createRadarPoint(j, total, markerRadius, centerX, centerY);
+            var labelPoint = createRadarPoint(j, total, outerRadius + 28, centerX, centerY);
+            svg += '<circle cx="' + markerPoint.x.toFixed(2) + '" cy="' + markerPoint.y.toFixed(2) + '" r="4" fill="#4338ca"></circle>';
+            svg += '<text x="' + labelPoint.x.toFixed(2) + '" y="' + labelPoint.y.toFixed(2) + '" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#475569">' + escapeHtml(data[j].shortTitle) + '</text>';
+          }
+
+          radarChart.innerHTML = svg;
+        }
+
+        function updateSelfSummary() {
+          var answeredCount = selfScores.filter(function (score) {
+            return score > 0;
+          }).length;
+          var totalScore = selfScores.reduce(function (sum, value) {
+            return sum + value;
+          }, 0);
+          var progress = (answeredCount / selfScores.length) * 100;
+
+          selfProgressLabel.textContent = answeredCount + ' of ' + selfScores.length + ' answered';
+          selfTotal.textContent = totalScore;
+          selfProgressFill.style.width = progress + '%';
+
+          if (answeredCount === selfScores.length) {
+            selfMessage.style.display = 'block';
+            selfMessage.textContent = totalScore >= 39
+              ? 'You show sufficient overall readiness to explore the ES role.'
+              : 'You are still developing overall readiness for the ES role.';
+          } else {
+            selfMessage.style.display = 'none';
+            selfMessage.textContent = '';
+          }
+
+          updateRadarChart();
+        }
+
+        function updateRoSummary() {
+          var demonstratedCount = roScores.filter(function (value) {
+            return value;
+          }).length;
+          var percent = Math.round((demonstratedCount / roScores.length) * 100);
+
+          roProgressLabel.textContent = demonstratedCount + ' of ' + roScores.length + ' met';
+          roTotal.textContent = percent + '%';
+          roProgressFill.style.width = percent + '%';
+        }
+
+        function activatePanel(panelName) {
+          var showSelf = panelName === 'self';
+          selfPanel.hidden = !showSelf;
+          roPanel.hidden = showSelf;
+
+          Array.prototype.forEach.call(tabButtons, function (button) {
+            var active = button.getAttribute('data-panel') === panelName;
+            button.classList.toggle('rr-active', active);
+            button.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+        }
+
+        document.addEventListener('click', function (event) {
+          var tabButton = event.target.closest('.rr-tab-button');
+          if (tabButton) {
+            activatePanel(tabButton.getAttribute('data-panel'));
+            return;
+          }
+
+          var scoreButton = event.target.closest('.rr-score-button');
+          if (scoreButton) {
+            var questionIndex = Number(scoreButton.getAttribute('data-question-index'));
+            var scoreValue = Number(scoreButton.getAttribute('data-score-value'));
+            selfScores[questionIndex] = scoreValue;
+            renderSelfQuestions();
+            updateSelfSummary();
+            return;
+          }
+
+          var indicatorButton = event.target.closest('.rr-indicator-button');
+          if (indicatorButton) {
+            var indicatorIndex = Number(indicatorButton.getAttribute('data-indicator-index'));
+            roScores[indicatorIndex] = !roScores[indicatorIndex];
+            renderRoIndicators();
+            updateRoSummary();
+          }
+        });
+
+        document.getElementById('rr-reset-self').addEventListener('click', function () {
+          if (window.confirm('Reset all self-assessment answers?')) {
+            selfScores = new Array(13).fill(0);
+            renderSelfQuestions();
+            updateSelfSummary();
+          }
+        });
+
+        document.getElementById('rr-reset-ro').addEventListener('click', function () {
+          if (window.confirm('Reset all RO evaluation selections?')) {
+            roScores = new Array(20).fill(false);
+            renderRoIndicators();
+            updateRoSummary();
+          }
+        });
+
+        renderSelfQuestions();
+        renderRoIndicators();
+        updateSelfSummary();
+        updateRoSummary();
+      })();
+    </script>
   </body>
 </html>
-
