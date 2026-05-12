@@ -4,7 +4,7 @@ This project now ships as a single self-contained `index.html` file with inline 
 
 ## Use locally
 
-- Open `/home/runner/work/Role-Readiness-Calculator/Role-Readiness-Calculator/index.html` directly in a browser, or
+- Open `./index.html` directly in a browser, or
 - run `npm run build` if you want a generated `dist/` copy.
 
 ## Use in D2L Brightspace
