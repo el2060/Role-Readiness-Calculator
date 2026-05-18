@@ -19,7 +19,7 @@ const categories = [
     title: 'Assessment',
     shortTitle: 'Assessment',
     questions: [
-      "(Co)Design and implement valid, reliable assessments to enhance learning."
+      "Design and implement valid, reliable assessments to enhance learning."
     ]
   },
   {
@@ -28,7 +28,7 @@ const categories = [
     shortTitle: 'Facilitation',
     questions: [
       "Employ a range of innovative T&L strategies with team to support effective learning.",
-      "(Co)Create a collaborative learning environment to effect innovative change."
+      "Create a collaborative learning environment to effect innovative change."
     ]
   },
   {
