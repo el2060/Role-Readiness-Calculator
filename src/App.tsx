@@ -292,13 +292,19 @@ export default function App() {
                           className="p-4 bg-[#F5F6F7] rounded-2xl border border-[#E8E9EA] overflow-hidden"
                         >
                           <p className="text-sm text-[#001530] font-medium">
-                            {totalScore < 26 
-                              ? 'You are building foundational capabilities. Focus on exploring professional development opportunities to strengthen your readiness for the ES role.'
-                              : totalScore < 39 
-                                ? 'You show emerging readiness. Continue to hone your skills and seek mentorship to further develop your competencies for the ES role.'
-                                : totalScore < 52 
-                                  ? 'You demonstrate solid readiness. You are well-positioned to explore the ES role and contribute effectively.'
-                                  : 'You show strong, advanced readiness. Your capabilities align highly with the expectations of the ES role.'}
+                            {answeredCount < 13 
+                              ? answeredCount < 5 
+                                ? 'Great start! Keep going to build your readiness profile.'
+                                : answeredCount < 9 
+                                  ? "You're making good progress! Your profile is taking shape."
+                                  : 'Almost there! Just a few more questions to unlock your diagnostic results.'
+                              : totalScore < 26 
+                                ? 'Diagnostic Complete: You are building foundational capabilities. Focus on exploring professional development opportunities to strengthen your readiness for the ES role.'
+                                : totalScore < 39 
+                                  ? 'Diagnostic Complete: You show emerging readiness. Continue to hone your skills and seek mentorship to further develop your competencies for the ES role.'
+                                  : totalScore < 52 
+                                    ? 'Diagnostic Complete: You demonstrate solid readiness. You are well-positioned to explore the ES role and contribute effectively.'
+                                    : 'Diagnostic Complete: You show strong, advanced readiness. Your capabilities align highly with the expectations of the ES role.'}
                           </p>
                         </motion.div>
                       )}
