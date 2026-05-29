@@ -9,9 +9,9 @@ const categories = [
     title: 'Curriculum',
     shortTitle: 'Curriculum',
     questions: [
-      "Design an outcome-based curriculum aligned with learning outcomes.",
-      "Design an outcome-based curriculum integrated with industry-relevant contexts.",
-      "Design appropriate pedagogy/andragogy approaches in curriculum design."
+      "Co-design an outcome-based curriculum aligned with learning outcomes.",
+      "Co-design an outcome-based curriculum integrated with industry-relevant contexts.",
+      "Co-design appropriate pedagogy/andragogy approaches in curriculum design."
     ]
   },
   {
@@ -19,7 +19,7 @@ const categories = [
     title: 'Assessment',
     shortTitle: 'Assessment',
     questions: [
-      "Design and implement valid, reliable assessments to enhance learning."
+      "Co-design and implement valid, reliable assessments to enhance learning."
     ]
   },
   {
@@ -27,8 +27,8 @@ const categories = [
     title: 'Facilitation of Learning',
     shortTitle: 'Facilitation',
     questions: [
-      "Employ a range of innovative T&L strategies with team to support effective learning.",
-      "Create a collaborative learning environment to effect innovative change."
+      "Co-create a range of innovative T&L strategies with team to support effective learning.",
+      "Co-create a collaborative learning environment to effect innovative change."
     ]
   },
   {
@@ -180,7 +180,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between sm:justify-start sm:gap-8">
             <img 
-              src="https://www.np.edu.sg/images/default-source/default-album/img-logo.png?sfvrsn=764583a6_19" 
+              src="https://www.np.edu.sg/_next/image?url=https%3A%2F%2Fassets.app.optical.gov.sg%2Fnp%2Fproduction%2Fpublished%2Fcollections%2Fpages%2F17c64bb4-8632-49e9-af16-047f7cabe99a%2Fab16008f-a6a0-466e-9193-e16e947261b0.png&w=1080&q=75" 
               alt="NP Logo" 
               className="h-7 sm:h-10 w-auto"
               referrerPolicy="no-referrer"
