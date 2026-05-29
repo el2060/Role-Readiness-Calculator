@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Info, RefreshCw, CheckCircle2, AlertCircle, UserCircle, ClipboardCheck } from 'lucide-react';
+import { Info, RefreshCw, CheckCircle2, AlertCircle, UserCircle, ClipboardCheck, Download } from 'lucide-react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 
 const categories = [
@@ -173,10 +173,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-slate-800 font-sans selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="min-h-screen bg-[#FAFAFA] text-slate-800 font-sans selection:bg-[#F5A800] selection:text-[#002147]">
       
       {/* Top Navigation / Tabs */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+      <div className="bg-white border-t-4 border-[#F5A800] border-b border-slate-200 sticky top-0 z-40 shadow-sm no-print">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between sm:justify-start sm:gap-8">
             <img 
@@ -191,11 +191,7 @@ export default function App() {
                   setActiveTab('self');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`py-4 px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-colors ${
-                  activeTab === 'self' 
-                    ? 'border-indigo-500 text-indigo-600' 
-                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                }`}
+                className={`py-4 px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-colors ${ activeTab === 'self' ? 'border-[#002147] text-[#002147]' : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300' }`}
               >
                 <UserCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className="hidden sm:inline">Self-Assessment</span>
@@ -206,11 +202,7 @@ export default function App() {
                   setActiveTab('ro');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className={`py-4 px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-colors ${
-                  activeTab === 'ro' 
-                    ? 'border-indigo-500 text-indigo-600' 
-                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                }`}
+                className={`py-4 px-2 border-b-2 font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-colors ${ activeTab === 'ro' ? 'border-[#002147] text-[#002147]' : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300' }`}
               >
                 <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className="hidden sm:inline">RO Evaluation</span>
@@ -221,7 +213,17 @@ export default function App() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 print-full-width">
+        {/* Print-only Header */}
+        <div className="hidden print-header">
+          <div className="flex justify-between items-end">
+            <div>
+              <h1 className="text-2xl font-bold text-[#002147] mb-1">ES Role Readiness Report</h1>
+              <p className="text-sm text-slate-500">Generated on {new Date().toLocaleDateString()}</p>
+            </div>
+            <img src="https://www.np.edu.sg/_next/image?url=https%3A%2F%2Fassets.app.optical.gov.sg%2Fnp%2Fproduction%2Fpublished%2Fcollections%2Fpages%2F17c64bb4-8632-49e9-af16-047f7cabe99a%2Fab16008f-a6a0-466e-9193-e16e947261b0.png&w=1080&q=75" alt="NP Logo" className="h-8 w-auto" style={{ filter: 'brightness(0)' }} />
+          </div>
+        </div>
         <AnimatePresence mode="wait">
           {activeTab === 'self' ? (
             <motion.div 
@@ -255,7 +257,7 @@ export default function App() {
                           <PolarGrid stroke="#f1f5f9" />
                           <PolarAngleAxis dataKey="shortTitle" tick={{ fill: '#64748b', fontSize: 10, fontWeight: 500 }} />
                           <PolarRadiusAxis angle={30} domain={[0, 10]} tick={false} axisLine={false} />
-                          <Radar name="Readiness" dataKey="score" stroke="#6366f1" strokeWidth={2} fill="#818cf8" fillOpacity={0.3} />
+                          <Radar name="Readiness" dataKey="score" stroke="#002147" strokeWidth={2} fill="#003580" fillOpacity={0.3} />
                         </RadarChart>
                       </ResponsiveContainer>
                     </div>
@@ -269,13 +271,13 @@ export default function App() {
                         <p className="text-xs text-slate-500 mt-1">{answeredCount} of 13 answered</p>
                       </div>
                       <div className="text-right">
-                        <span className="text-2xl font-bold text-indigo-600">{totalScore}</span>
+                        <span className="text-2xl font-bold text-[#002147]">{totalScore}</span>
                         <span className="text-xs text-slate-400 block -mt-1">Total Score</span>
                       </div>
                     </div>
                     <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                       <motion.div
-                        className="h-full bg-indigo-500 rounded-full"
+                        className="h-full bg-[#002147] rounded-full"
                         initial={{ width: 0 }}
                         animate={{ width: `${(answeredCount / 13) * 100}%` }}
                         transition={{ duration: 0.5, ease: "easeOut" }}
@@ -287,9 +289,9 @@ export default function App() {
                         <motion.div 
                           initial={{ opacity: 0, height: 0, marginTop: 0 }}
                           animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
-                          className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100 overflow-hidden"
+                          className="p-4 bg-[#F5F6F7] rounded-2xl border border-[#E8E9EA] overflow-hidden"
                         >
-                          <p className="text-sm text-indigo-900 font-medium">
+                          <p className="text-sm text-[#001530] font-medium">
                             {totalScore >= 39 
                               ? 'You show sufficient overall readiness to explore the ES role.' 
                               : 'You are developing overall readiness for the ES role.'}
@@ -299,10 +301,11 @@ export default function App() {
                     </AnimatePresence>
 
                     <div className="flex justify-between items-center mt-6 pt-6 border-t border-slate-100">
-                      <button 
-                        onClick={() => setShowResetConfirm(true)} 
-                        className="text-sm text-slate-400 hover:text-red-500 transition-colors flex items-center gap-2 font-medium"
-                      >
+                      <button onClick={() => window.print()} className="no-print flex items-center gap-2 text-sm font-semibold text-[#002147] bg-[#F5F6F7] hover:bg-[#E8E9EA] px-4 py-2 rounded-xl transition-all active:scale-95">
+                        <Download className="w-4 h-4" />
+                        Export PDF
+                      </button>
+                      <button onClick={() => setShowResetConfirm(true)} className="text-sm text-slate-400 hover:text-red-500 transition-colors flex items-center gap-2 font-medium no-print">
                         <RefreshCw className="w-4 h-4" />
                         Reset Assessment
                       </button>
@@ -316,10 +319,10 @@ export default function App() {
               <div className="lg:col-span-8 xl:col-span-8 space-y-10">
                 
                 {/* Info Box */}
-                <div className="bg-indigo-50/50 rounded-3xl p-6 sm:p-8 border border-indigo-100/50 flex gap-4 items-start">
-                  <Info className="w-6 h-6 text-indigo-500 shrink-0 mt-0.5" />
-                  <div className="text-sm text-indigo-900/80 leading-relaxed">
-                    <p className="font-semibold text-indigo-900 mb-1">About this assessment</p>
+                <div className="bg-[#F5F6F7]/50 rounded-3xl p-6 sm:p-8 border border-[#E8E9EA]/50 flex gap-4 items-start">
+                  <Info className="w-6 h-6 text-[#F5A800] shrink-0 mt-0.5" />
+                  <div className="text-sm text-[#001530]/80 leading-relaxed">
+                    <p className="font-semibold text-[#001530] mb-1">About this assessment</p>
                     <p>
                       This tool helps you reflect on specific competencies. A total indicator of 39+ reflects readiness to explore the ES role. Discuss these results with your reporting officer to align your professional development goals.
                     </p>
@@ -332,7 +335,7 @@ export default function App() {
                   return (
                     <section key={category.id} className="space-y-6">
                       <div className="flex items-center gap-4">
-                        <h3 className="text-xl font-semibold text-slate-900">{category.title}</h3>
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[#002147]">{category.title}</h3>
                         <div className="h-px flex-1 bg-slate-200"></div>
                       </div>
                       
@@ -344,13 +347,13 @@ export default function App() {
                               key={globalIndex}
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: globalIndex * 0.05 }}
-                              className={`bg-white rounded-3xl p-6 sm:p-8 shadow-sm border transition-colors duration-300 ${
-                                scores[globalIndex] > 0 ? 'border-indigo-100' : 'border-slate-100 hover:border-slate-200'
+                              transition={{ delay: qIndex * 0.1, type: "spring", stiffness: 100 }}
+                              className={`print-avoid-break print-clean-card bg-white rounded-3xl p-8 sm:p-10 shadow-[0_4px_24px_rgba(0,33,71,0.04)] hover:shadow-[0_8px_32px_rgba(0,33,71,0.08)] border transition-all duration-500 ${
+                                scores[globalIndex] > 0 ? 'border-[#E8E9EA]' : 'border-slate-100 hover:border-slate-200'
                               }`}
                             >
                               <div className="flex gap-3 mb-4 sm:mb-6">
-                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold shrink-0 text-xs sm:text-sm">
+                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#F5F6F7] text-[#002147] flex items-center justify-center font-bold shrink-0 text-xs sm:text-sm">
                                   {globalIndex + 1}
                                 </div>
                                 <p className="text-sm sm:text-lg font-medium text-slate-800 pt-0.5 sm:pt-1 leading-relaxed">
@@ -360,17 +363,18 @@ export default function App() {
 
                               <div className="flex gap-1 sm:gap-3">
                                 {scale.map(s => (
-                                  <button
+                                  <motion.button
+                                    whileTap={{ scale: 0.95 }}
                                     key={s.value}
                                     onClick={() => handleScoreChange(globalIndex, s.value)}
-                                    className={`flex-1 flex flex-col items-center justify-center py-2 sm:py-4 px-0.5 sm:px-2 rounded-xl sm:rounded-2xl transition-all duration-300 ${
+                                    className={`flex-1 flex flex-col items-center justify-center py-3 sm:py-5 px-1 sm:px-2 rounded-2xl transition-all duration-300 ${
                                       scores[globalIndex] === s.value
-                                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200/50'
+                                        ? 'bg-[#002147] text-white shadow-md shadow-[#002147]/50'
                                         : 'bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-700'
                                     }`}
                                   >
                                     <span className="text-base sm:text-xl font-semibold mb-0.5 sm:mb-1">{s.value}</span>
-                                    <span className={`text-[8px] sm:text-xs text-center leading-tight px-0.5 ${scores[globalIndex] === s.value ? 'text-indigo-100' : 'text-slate-400'}`}>
+                                    <span className={`text-[8px] sm:text-xs text-center leading-tight px-0.5 ${scores[globalIndex] === s.value ? 'text-[#F5A800]' : 'text-slate-400'}`}>
                                       {s.label}
                                     </span>
                                   </button>
@@ -428,10 +432,11 @@ export default function App() {
                     </div>
                     
                     <div className="flex justify-between items-center mt-6 pt-6 border-t border-slate-100">
-                      <button 
-                        onClick={() => setShowRoResetConfirm(true)} 
-                        className="text-sm text-slate-400 hover:text-red-500 transition-colors flex items-center gap-2 font-medium"
-                      >
+                      <button onClick={() => window.print()} className="no-print flex items-center gap-2 text-sm font-semibold text-[#002147] bg-[#F5F6F7] hover:bg-[#E8E9EA] px-4 py-2 rounded-xl transition-all active:scale-95">
+                        <Download className="w-4 h-4" />
+                        Export PDF
+                      </button>
+                      <button onClick={() => setShowRoResetConfirm(true)} className="text-sm text-slate-400 hover:text-red-500 transition-colors flex items-center gap-2 font-medium no-print">
                         <RefreshCw className="w-4 h-4" />
                         Reset Evaluation
                       </button>
@@ -460,7 +465,7 @@ export default function App() {
                   return (
                     <section key={category.id} className="space-y-6">
                       <div className="flex items-center gap-4">
-                        <h3 className="text-xl font-semibold text-slate-900">{category.title}</h3>
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[#002147]">{category.title}</h3>
                         <div className="h-px flex-1 bg-slate-200"></div>
                       </div>
                       
@@ -474,9 +479,9 @@ export default function App() {
                               key={globalIndex}
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: qIndex * 0.05 }}
+                              transition={{ delay: qIndex * 0.08, type: "spring", stiffness: 100 }}
                               onClick={() => handleRoScoreToggle(globalIndex)}
-                              className={`group cursor-pointer bg-white rounded-2xl p-4 sm:p-5 shadow-sm border transition-all duration-300 flex items-start gap-3 sm:gap-6 ${
+                              className={`print-avoid-break print-clean-card group cursor-pointer bg-white rounded-3xl p-6 sm:p-8 shadow-[0_4px_24px_rgba(0,33,71,0.04)] hover:shadow-[0_8px_32px_rgba(0,33,71,0.08)] border transition-all duration-500 flex items-start gap-3 sm:gap-6 ${
                                 isDemonstrated 
                                   ? 'border-emerald-200 bg-emerald-50/30' 
                                   : 'border-slate-100 hover:border-amber-200 hover:shadow-md'
