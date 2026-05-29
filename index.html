@@ -924,11 +924,17 @@
           selfTotal.textContent = totalScore;
           selfProgressFill.style.width = progress + '%';
 
-          if (answeredCount === selfScores.length) {
+          if (answeredCount > 0) {
             selfMessage.style.display = 'block';
-            selfMessage.textContent = totalScore >= 39
-              ? 'You show sufficient overall readiness to explore the ES role.'
-              : 'You are still developing overall readiness for the ES role.';
+            if (totalScore < 26) {
+              selfMessage.textContent = 'You are building foundational capabilities. Focus on exploring professional development opportunities to strengthen your readiness for the ES role.';
+            } else if (totalScore < 39) {
+              selfMessage.textContent = 'You show emerging readiness. Continue to hone your skills and seek mentorship to further develop your competencies for the ES role.';
+            } else if (totalScore < 52) {
+              selfMessage.textContent = 'You demonstrate solid readiness. You are well-positioned to explore the ES role and contribute effectively.';
+            } else {
+              selfMessage.textContent = 'You show strong, advanced readiness. Your capabilities align highly with the expectations of the ES role.';
+            }
           } else {
             selfMessage.style.display = 'none';
             selfMessage.textContent = '';

@@ -285,16 +285,20 @@ export default function App() {
                     </div>
                     
                     <AnimatePresence>
-                      {isComplete && (
+                      {answeredCount > 0 && (
                         <motion.div 
                           initial={{ opacity: 0, height: 0, marginTop: 0 }}
                           animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
                           className="p-4 bg-[#F5F6F7] rounded-2xl border border-[#E8E9EA] overflow-hidden"
                         >
                           <p className="text-sm text-[#001530] font-medium">
-                            {totalScore >= 39 
-                              ? 'You show sufficient overall readiness to explore the ES role.' 
-                              : 'You are developing overall readiness for the ES role.'}
+                            {totalScore < 26 
+                              ? 'You are building foundational capabilities. Focus on exploring professional development opportunities to strengthen your readiness for the ES role.'
+                              : totalScore < 39 
+                                ? 'You show emerging readiness. Continue to hone your skills and seek mentorship to further develop your competencies for the ES role.'
+                                : totalScore < 52 
+                                  ? 'You demonstrate solid readiness. You are well-positioned to explore the ES role and contribute effectively.'
+                                  : 'You show strong, advanced readiness. Your capabilities align highly with the expectations of the ES role.'}
                           </p>
                         </motion.div>
                       )}
