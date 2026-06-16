@@ -102,7 +102,8 @@
         color: #ffffff;
       }
 
-      .rr-panel[hidden] {
+      .rr-panel[hidden],
+      [hidden] {
         display: none !important;
       }
 
@@ -434,6 +435,41 @@
         }
       }
     
+      .rr-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+      .rr-modal-overlay[hidden] {
+        display: none !important;
+      }
+      .rr-modal-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        padding: 48px 40px;
+        max-width: 440px;
+        width: calc(100% - 32px);
+        box-shadow: 0 24px 64px rgba(0, 33, 71, 0.12);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: modalFadeIn 0.3s ease-out;
+      }
+      @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
       @media print {
         @page {
           size: A4 portrait;
@@ -606,16 +642,18 @@
         </div>
       </div>
 
-      <div id="rr-entry-panel" class="rr-panel" style="margin-top: 48px;">
-        <div class="rr-entry-card" style="margin: 0 auto;">
+      <div id="rr-modal" class="rr-modal-overlay">
+        <div class="rr-modal-card">
           <h2 style="color: #002147; margin: 0 0 8px; font-size: 24px; text-align: center;">Welcome</h2>
-          <p style="color: #64748b; margin: 0 0 32px; text-align: center;">Please select your current grade to begin the assessment.</p>
+          <p style="color: #64748b; margin: 0 0 24px; text-align: center;">Please select your current grade to begin the assessment.</p>
+          <p id="rr-modal-warning" style="color: #b91c1c; margin: 0 0 24px; font-size: 13px; text-align: center; background: #fef2f2; padding: 8px 12px; border-radius: 8px; width: 100%; display: none;">Note: Changing your level will reset any current progress.</p>
           <button class="rr-entry-btn" data-level="IPX8">IPX8 and below</button>
           <button class="rr-entry-btn" data-level="IPX9">IPX9 and above</button>
+          <button id="rr-modal-cancel" style="margin-top: 12px; background: transparent; border: none; color: #64748b; font-weight: 600; cursor: pointer; padding: 8px; display: none;">Cancel</button>
         </div>
       </div>
       
-      <div id="rr-dashboard-panel" class="rr-panel" hidden>
+      <div id="rr-dashboard-panel" class="rr-panel">
 
       <div id="rr-self-panel" class="rr-panel">
         <div class="rr-layout">
@@ -656,7 +694,7 @@
           <div class="rr-stack">
             <div class="rr-card rr-help">
               <h3>About this assessment</h3>
-              <p>This tool helps you reflect on specific competencies. A total indicator of 39+ reflects readiness to explore the ES role. Discuss the results with your reporting officer to align professional development goals.</p>
+              <p id="rr-help-text">This tool helps you reflect on specific competencies. A total indicator of 39+ reflects readiness to explore the ES role. Discuss the results with your reporting officer to align professional development goals.</p>
             </div>
             <div id="rr-self-content" class="rr-question-list"></div>
           </div>
@@ -915,11 +953,20 @@
         var roProgressFill = document.getElementById('rr-ro-progress-fill');
         var radarChart = document.getElementById('rr-radar-chart');
         var tabButtons = document.querySelectorAll('.rr-tab-button');
-        var entryPanel = document.getElementById('rr-entry-panel');
-        var dashboardPanel = document.getElementById('rr-dashboard-panel');
+        var modalOverlay = document.getElementById('rr-modal');
+        var modalWarning = document.getElementById('rr-modal-warning');
+        var modalCancel = document.getElementById('rr-modal-cancel');
+        var hasStarted = false;
         
         function initAppForLevel(level) {
+          if (currentIpxLevel === level) {
+            // If they select the same level, just close the modal, don't reset
+            modalOverlay.hidden = true;
+            return;
+          }
+          
           currentIpxLevel = level;
+          hasStarted = true;
           var isAdvanced = level === 'IPX9' || level === 'IPX10+';
           activeCategories = isAdvanced ? categoriesIpx9Above : categoriesIpx8Below;
           activeRoCategories = isAdvanced ? roCategoriesIpx9Above : roCategoriesIpx8Below;
@@ -930,15 +977,32 @@
           selfScores = new Array(totalSelf).fill(0);
           roScores = new Array(totalRo).fill(false);
           
+          var helpText = document.getElementById('rr-help-text');
+          if (isAdvanced) {
+            helpText.innerHTML = 'A total score of 45 points and above (out of 65) indicates a good level of readiness to embark on a two-year developmental journey towards the ES role. While this score reflects readiness to explore the ES role, it is important for the lecturer to engage in a discussion with their reporting officer to validate their readiness, clarify expectations, and align their professional development goals.<br><br><span style="font-size: 12px; font-style: italic; color: #64748b;">*Note: Different levels refer to school, department, school, institute and/or sector level.*</span>';
+          } else {
+            helpText.innerHTML = 'This tool helps you reflect on specific competencies. A total indicator of 39+ reflects readiness to explore the ES role. Discuss the results with your reporting officer to align professional development goals.';
+          }
+          
           renderSelfQuestions();
           renderRoIndicators();
           updateSelfSummary();
           updateRoSummary();
           
-          entryPanel.hidden = true;
-          dashboardPanel.hidden = false;
+          modalOverlay.hidden = true;
           document.getElementById('rr-tabs-container').hidden = false;
         }
+        
+        // Initial silent render to populate the background
+        currentIpxLevel = 'IPX8';
+        activeCategories = categoriesIpx8Below;
+        activeRoCategories = roCategoriesIpx8Below;
+        selfScores = new Array(13).fill(0);
+        roScores = new Array(20).fill(false);
+        renderSelfQuestions();
+        renderRoIndicators();
+        updateSelfSummary();
+        updateRoSummary();
 
         function escapeHtml(text) {
           return String(text)
@@ -1089,8 +1153,10 @@
           selfTotal.textContent = totalScore;
           selfProgressFill.style.width = progress + '%';
 
-          if (answeredCount > 0) {
+          if (answeredCount === selfScores.length) {
             selfMessage.style.display = 'block';
+            selfMessage.style.color = '#002147';
+            selfMessage.style.fontWeight = '600';
             var isAdvanced = currentIpxLevel === 'IPX9' || currentIpxLevel === 'IPX10+';
             if (isAdvanced) {
               if (totalScore < 45) {
@@ -1109,6 +1175,11 @@
                 selfMessage.textContent = 'You show strong, advanced readiness. Your capabilities align highly with the expectations of the ES role.';
               }
             }
+          } else if (answeredCount > 0) {
+            selfMessage.style.display = 'block';
+            selfMessage.style.color = '#64748b';
+            selfMessage.style.fontWeight = 'normal';
+            selfMessage.innerHTML = '<em>Please complete all ' + selfScores.length + ' questions to unlock your final readiness feedback.</em>';
           } else {
             selfMessage.style.display = 'none';
             selfMessage.textContent = '';
@@ -1197,12 +1268,13 @@
         });
 
         document.getElementById('rr-back-btn').addEventListener('click', function () {
-          if (window.confirm('Are you sure you want to change levels? This will reset your current progress.')) {
-            entryPanel.hidden = false;
-            dashboardPanel.hidden = true;
-            document.getElementById('rr-tabs-container').hidden = true;
-            currentIpxLevel = null;
-          }
+          modalWarning.style.display = 'block';
+          modalCancel.style.display = 'block';
+          modalOverlay.hidden = false;
+        });
+        
+        document.getElementById('rr-modal-cancel').addEventListener('click', function() {
+          modalOverlay.hidden = true;
         });
 
 
