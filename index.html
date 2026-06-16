@@ -25,13 +25,14 @@
       }
 
       .rr-header {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-top: 4px solid #F5A800;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(226, 232, 240, 0.5);
         border-radius: 24px;
         padding: 20px;
         margin-bottom: 24px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        box-shadow: 0 4px 24px rgba(0, 33, 71, 0.04);
       }
 
       .rr-brand {
@@ -134,13 +135,54 @@
       }
 
       .rr-help {
-        background: #F5F6F7;
-        border-color: #E8E9EA;
+        background: #eff6ff;
+        border-color: #dbeafe;
       }
 
       .rr-help.ro {
-        background: #fff7ed;
-        border-color: #fed7aa;
+        background: #eff6ff;
+        border-color: #dbeafe;
+      }
+      
+      .rr-entry-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: center;
+      }
+      .rr-entry-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        padding: 48px 40px;
+        max-width: 440px;
+        width: 100%;
+        box-shadow: 0 12px 48px rgba(0, 33, 71, 0.06);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .rr-entry-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 16px;
+        margin-bottom: 12px;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        color: #334155;
+        transition: all 0.2s ease;
+      }
+      .rr-entry-btn:hover {
+        border-color: #002147;
+        background: #f8fafc;
+        color: #002147;
       }
 
       .rr-help p,
@@ -397,7 +439,7 @@
           size: A4 portrait;
           margin: 1.5cm;
         }
-        .rr-tabs, .rr-reset-button, #rr-export-pdf-self, #rr-export-pdf-ro, .rr-small-note, .rr-help {
+        .rr-tabs, #rr-back-btn, .rr-reset-button, #rr-export-pdf-self, #rr-export-pdf-ro, .rr-small-note, .rr-help {
           display: none !important;
         }
         body {
@@ -416,7 +458,7 @@
         .rr-header {
           border-radius: 0 !important;
           border: none !important;
-          border-bottom: 4px solid #F5A800 !important;
+          border-bottom: 1px solid #e2e8f0 !important;
           padding: 0 0 16px 0 !important;
           margin-bottom: 24px !important;
           box-shadow: none !important;
@@ -495,8 +537,7 @@
         max-width: 1240px;
       }
       .rr-header {
-        border-top: 4px solid #F5A800;
-        box-shadow: 0 4px 24px rgba(0, 33, 71, 0.08);
+        border-top: none;
       }
       .rr-card {
         box-shadow: 0 4px 24px rgba(0, 33, 71, 0.04);
@@ -557,12 +598,24 @@
               <p>Single-file assessment that can be opened directly or pasted into a Brightspace HTML/code editor.</p>
             </div>
           </div>
-          <div class="rr-tabs" role="tablist" aria-label="Assessment modes">
+          <div id="rr-tabs-container" class="rr-tabs" role="tablist" aria-label="Assessment modes" hidden>
+            <button id="rr-back-btn" type="button" style="background: transparent; border: none; font-weight: 600; color: #64748b; cursor: pointer; padding: 12px 18px; margin-right: 8px;">← Change Level</button>
             <button class="rr-tab-button rr-active" type="button" data-panel="self" aria-selected="true">Self-Assessment</button>
             <button class="rr-tab-button" type="button" data-panel="ro" aria-selected="false">RO Evaluation</button>
           </div>
         </div>
       </div>
+
+      <div id="rr-entry-panel" class="rr-panel" style="margin-top: 48px;">
+        <div class="rr-entry-card" style="margin: 0 auto;">
+          <h2 style="color: #002147; margin: 0 0 8px; font-size: 24px; text-align: center;">Welcome</h2>
+          <p style="color: #64748b; margin: 0 0 32px; text-align: center;">Please select your current grade to begin the assessment.</p>
+          <button class="rr-entry-btn" data-level="IPX8">IPX8 and below</button>
+          <button class="rr-entry-btn" data-level="IPX9">IPX9 and above</button>
+        </div>
+      </div>
+      
+      <div id="rr-dashboard-panel" class="rr-panel" hidden>
 
       <div id="rr-self-panel" class="rr-panel">
         <div class="rr-layout">
@@ -654,15 +707,19 @@
           </div>
         </div>
       </div>
+      </div>
     </div>
 
     <script>
       (function () {
-        var categories = [
+        
+        var currentIpxLevel = null;
+        var activeCategories = [];
+        var activeRoCategories = [];
+
+        var categoriesIpx8Below = [
           {
-            id: 'curriculum',
-            title: 'Curriculum',
-            shortTitle: 'Curriculum',
+            id: 'curriculum', title: 'Curriculum', shortTitle: 'Curriculum',
             questions: [
               'Co-design an outcome-based curriculum aligned with learning outcomes.',
               'Co-design an outcome-based curriculum integrated with industry-relevant contexts.',
@@ -670,26 +727,20 @@
             ]
           },
           {
-            id: 'assessment',
-            title: 'Assessment',
-            shortTitle: 'Assessment',
+            id: 'assessment', title: 'Assessment', shortTitle: 'Assessment',
             questions: [
               'Co-design and implement valid, reliable assessments to enhance learning.'
             ]
           },
           {
-            id: 'facilitation',
-            title: 'Facilitation of Learning',
-            shortTitle: 'Facilitation',
+            id: 'facilitation', title: 'Facilitation of Learning', shortTitle: 'Facilitation',
             questions: [
               'Employ a range of innovative T&L strategies with team to support effective learning.',
               'Co-create a collaborative learning environment to effect innovative change.'
             ]
           },
           {
-            id: 'reflective',
-            title: 'Reflective Practice, Data & Tech-enhanced T&L',
-            shortTitle: 'Reflective & Tech',
+            id: 'reflective', title: 'Reflective Practice, Data & Tech-enhanced T&L', shortTitle: 'Reflective & Tech',
             questions: [
               'Apply evidence-based reflective practices to support innovative and responsive T&L.',
               'Leverage EdTech tools to enhance learner engagement.',
@@ -697,9 +748,7 @@
             ]
           },
           {
-            id: 'dual',
-            title: 'Dual Professionals',
-            shortTitle: 'Dual Prof',
+            id: 'dual', title: 'Dual Professionals', shortTitle: 'Dual Prof',
             questions: [
               'Stay informed about latest industry trends and innovations.',
               'Translate industry-relevant developments into effective T&L strategies to enhance learning outcomes.',
@@ -709,10 +758,57 @@
           }
         ];
 
-        var roCategories = [
+        var categoriesIpx9Above = [
           {
-            id: 'innovation',
-            title: 'A Track Record of Innovation',
+            id: 'curriculum9', title: 'Curriculum Design', shortTitle: 'Curriculum',
+            questions: [
+              'Implement evidence-based enhancements in curriculum that aligned with learning outcomes at different levels.',
+              'Drive improvements to curriculum at different levels.',
+              'Guide the implementation of pedagogy/andragogy in curriculum design at different levels.'
+            ]
+          },
+          {
+            id: 'facilitation9', title: 'Facilitation of Learning', shortTitle: 'Facilitation',
+            questions: [
+              'Drive initiatives at different levels to create learning environments effect innovative change.',
+              'Design and implement T&L strategies to support effective learning.'
+            ]
+          },
+          {
+            id: 'assessment9', title: 'Assessment', shortTitle: 'Assessment',
+            questions: [
+              'Propose evidence-based enhancements in assessments at different levels.'
+            ]
+          },
+          {
+            id: 'edtech9', title: 'EdTech & Data Analytics', shortTitle: 'EdTech & Data',
+            questions: [
+              'Drive effort to integrate EdTech to enhance learning at different levels.',
+              'Drive efforts to apply data and learning analytics for T&L interventions at different levels.',
+              'Drive efforts to integrate EdTech in T&L at different levels.'
+            ]
+          },
+          {
+            id: 'research9', title: 'Research & Industry Engagement', shortTitle: 'Research & Ind.',
+            questions: [
+              'Lead collaborative efforts in T&L research and translate them into effective practices.',
+              'Lead T&L projects through industry partnerships to enhance learning outcomes at different levels.',
+              'Contribute actively to domain-specific industry to stay updated on industry trends.'
+            ]
+          },
+          {
+            id: 'mentor9', title: 'Mentorship & Leadership', shortTitle: 'Leadership',
+            questions: [
+              'Provide T&L mentorship/training to staff at different levels.'
+            ]
+          }
+        ];
+
+
+        
+        var roCategoriesIpx8Below = [
+          {
+            id: 'innovation', title: 'A Track Record of Innovation',
             indicators: [
               'Leads/Contributes to innovative T&L projects.',
               'Pilots new pedagogical approaches to enhance student learning outcomes.',
@@ -722,8 +818,7 @@
             ]
           },
           {
-            id: 'pedagogy',
-            title: 'A Passion for Pedagogy',
+            id: 'pedagogy', title: 'A Passion for Pedagogy',
             indicators: [
               'Demonstrates a deep interest in pedagogical development (e.g. active learning).',
               'Applies reflective practices constantly to improve T&L effectiveness (e.g. uses data to inform practices).',
@@ -739,8 +834,7 @@
             ]
           },
           {
-            id: 'mentor',
-            title: 'The Heart of a Mentor',
+            id: 'mentor', title: 'The Heart of a Mentor',
             indicators: [
               'Collaborates effectively with colleagues on T&L initiatives.',
               'Supports peers by sharing effective teaching practices and resources.',
@@ -750,6 +844,53 @@
           }
         ];
 
+        var roCategoriesIpx9Above = [
+          {
+            id: 'curriculum9_ro', title: 'Curriculum Design',
+            indicators: [
+              'Implements evidence-based enhancements in curriculum that aligned with learning outcomes at different levels.',
+              'Drives improvements to curriculum at different levels.',
+              'Guides the implementation of pedagogy/andragogy in curriculum design at different levels.'
+            ]
+          },
+          {
+            id: 'facilitation9_ro', title: 'Facilitation of Learning',
+            indicators: [
+              'Drives initiatives at different levels to create learning environments effect innovative change.',
+              'Designs and implements T&L strategies to support effective learning.'
+            ]
+          },
+          {
+            id: 'assessment9_ro', title: 'Assessment',
+            indicators: [
+              'Proposes evidence-based enhancements in assessments at different levels.'
+            ]
+          },
+          {
+            id: 'edtech9_ro', title: 'EdTech & Data Analytics',
+            indicators: [
+              'Drives effort to integrate EdTech to enhance learning at different levels.',
+              'Drives efforts to apply data and learning analytics for T&L interventions at different levels.',
+              'Drives efforts to integrate EdTech in T&L at different levels.'
+            ]
+          },
+          {
+            id: 'research9_ro', title: 'Research & Industry Engagement',
+            indicators: [
+              'Leads collaborative efforts in T&L research and translates them into effective practices.',
+              'Leads T&L projects through industry partnerships to enhance learning outcomes at different levels.',
+              'Contributes actively to domain-specific industry to stay updated on industry trends.'
+            ]
+          },
+          {
+            id: 'mentor9_ro', title: 'Mentorship & Leadership',
+            indicators: [
+              'Provides T&L mentorship/training to staff at different levels.'
+            ]
+          }
+        ];
+
+
         var scale = [
           { value: 1, label: 'Not Ready Yet' },
           { value: 2, label: 'Emerging Readiness' },
@@ -758,8 +899,8 @@
           { value: 5, label: 'Highly Ready' }
         ];
 
-        var selfScores = new Array(13).fill(0);
-        var roScores = new Array(20).fill(false);
+        var selfScores = [];
+        var roScores = [];
 
         var selfContent = document.getElementById('rr-self-content');
         var roContent = document.getElementById('rr-ro-content');
@@ -774,6 +915,30 @@
         var roProgressFill = document.getElementById('rr-ro-progress-fill');
         var radarChart = document.getElementById('rr-radar-chart');
         var tabButtons = document.querySelectorAll('.rr-tab-button');
+        var entryPanel = document.getElementById('rr-entry-panel');
+        var dashboardPanel = document.getElementById('rr-dashboard-panel');
+        
+        function initAppForLevel(level) {
+          currentIpxLevel = level;
+          var isAdvanced = level === 'IPX9' || level === 'IPX10+';
+          activeCategories = isAdvanced ? categoriesIpx9Above : categoriesIpx8Below;
+          activeRoCategories = isAdvanced ? roCategoriesIpx9Above : roCategoriesIpx8Below;
+          
+          var totalSelf = activeCategories.reduce(function(acc, cat) { return acc + cat.questions.length; }, 0);
+          var totalRo = activeRoCategories.reduce(function(acc, cat) { return acc + cat.indicators.length; }, 0);
+          
+          selfScores = new Array(totalSelf).fill(0);
+          roScores = new Array(totalRo).fill(false);
+          
+          renderSelfQuestions();
+          renderRoIndicators();
+          updateSelfSummary();
+          updateRoSummary();
+          
+          entryPanel.hidden = true;
+          dashboardPanel.hidden = false;
+          document.getElementById('rr-tabs-container').hidden = false;
+        }
 
         function escapeHtml(text) {
           return String(text)
@@ -788,7 +953,7 @@
           var html = '';
           var questionIndex = 0;
 
-          categories.forEach(function (category) {
+          activeCategories.forEach(function (category) {
             html += '<section class="rr-category-block">';
             html += '<div class="rr-category-head"><h3>' + escapeHtml(category.title) + '</h3><div class="rr-divider"></div></div>';
 
@@ -823,7 +988,7 @@
           var html = '';
           var indicatorIndex = 0;
 
-          roCategories.forEach(function (category) {
+          activeRoCategories.forEach(function (category) {
             html += '<section class="rr-category-block">';
             html += '<div class="rr-category-head"><h3>' + escapeHtml(category.title) + '</h3><div class="rr-divider"></div></div>';
 
@@ -845,7 +1010,7 @@
 
         function getCategoryScores() {
           var currentIndex = 0;
-          return categories.map(function (category) {
+          return activeCategories.map(function (category) {
             var categoryAnswers = selfScores.slice(currentIndex, currentIndex + category.questions.length);
             var answered = categoryAnswers.filter(function (score) {
               return score > 0;
@@ -926,14 +1091,23 @@
 
           if (answeredCount > 0) {
             selfMessage.style.display = 'block';
-            if (totalScore < 26) {
-              selfMessage.textContent = 'You are building foundational capabilities. Focus on exploring professional development opportunities to strengthen your readiness for the ES role.';
-            } else if (totalScore < 39) {
-              selfMessage.textContent = 'You show emerging readiness. Continue to hone your skills and seek mentorship to further develop your competencies for the ES role.';
-            } else if (totalScore < 52) {
-              selfMessage.textContent = 'You demonstrate solid readiness. You are well-positioned to explore the ES role and contribute effectively.';
+            var isAdvanced = currentIpxLevel === 'IPX9' || currentIpxLevel === 'IPX10+';
+            if (isAdvanced) {
+              if (totalScore < 45) {
+                selfMessage.textContent = 'You are building capabilities. Continue to hone your skills and seek mentorship to further develop your competencies for the ES role.';
+              } else {
+                selfMessage.textContent = 'You demonstrate a good level of readiness to embark on a two-year developmental journey towards the ES role.';
+              }
             } else {
-              selfMessage.textContent = 'You show strong, advanced readiness. Your capabilities align highly with the expectations of the ES role.';
+              if (totalScore < 26) {
+                selfMessage.textContent = 'You are building foundational capabilities. Focus on exploring professional development opportunities to strengthen your readiness for the ES role.';
+              } else if (totalScore < 39) {
+                selfMessage.textContent = 'You show emerging readiness. Continue to hone your skills and seek mentorship to further develop your competencies for the ES role.';
+              } else if (totalScore < 52) {
+                selfMessage.textContent = 'You demonstrate solid readiness. You are well-positioned to explore the ES role and contribute effectively.';
+              } else {
+                selfMessage.textContent = 'You show strong, advanced readiness. Your capabilities align highly with the expectations of the ES role.';
+              }
             }
           } else {
             selfMessage.style.display = 'none';
@@ -967,6 +1141,12 @@
         }
 
         document.addEventListener('click', function (event) {
+          var entryBtn = event.target.closest('.rr-entry-btn');
+          if (entryBtn) {
+            initAppForLevel(entryBtn.getAttribute('data-level'));
+            return;
+          }
+
           var tabButton = event.target.closest('.rr-tab-button');
           if (tabButton) {
             activatePanel(tabButton.getAttribute('data-panel'));
@@ -1002,7 +1182,7 @@
 
         document.getElementById('rr-reset-self').addEventListener('click', function () {
           if (window.confirm('Reset all self-assessment answers?')) {
-            selfScores = new Array(13).fill(0);
+            selfScores = new Array(selfScores.length).fill(0);
             renderSelfQuestions();
             updateSelfSummary();
           }
@@ -1010,16 +1190,22 @@
 
         document.getElementById('rr-reset-ro').addEventListener('click', function () {
           if (window.confirm('Reset all RO evaluation selections?')) {
-            roScores = new Array(20).fill(false);
+            roScores = new Array(roScores.length).fill(false);
             renderRoIndicators();
             updateRoSummary();
           }
         });
 
-        renderSelfQuestions();
-        renderRoIndicators();
-        updateSelfSummary();
-        updateRoSummary();
+        document.getElementById('rr-back-btn').addEventListener('click', function () {
+          if (window.confirm('Are you sure you want to change levels? This will reset your current progress.')) {
+            entryPanel.hidden = false;
+            dashboardPanel.hidden = true;
+            document.getElementById('rr-tabs-container').hidden = true;
+            currentIpxLevel = null;
+          }
+        });
+
+
       })();
     </script>
   </body>
