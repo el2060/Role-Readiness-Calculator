@@ -1065,9 +1065,10 @@
         var hasStarted = false;
         
         function initAppForLevel(level) {
-          if (currentIpxLevel === level) {
+          if (hasStarted && currentIpxLevel === level) {
             // If they select the same level, just close the modal, don't reset
-            modalOverlay.hidden = true;
+            modalOverlay.style.display = 'none';
+            document.getElementById('rr-tabs-container').style.display = 'flex';
             return;
           }
           
@@ -1095,8 +1096,8 @@
           updateSelfSummary();
           updateRoSummary();
           
-          modalOverlay.hidden = true;
-          document.getElementById('rr-tabs-container').hidden = false;
+          modalOverlay.style.display = 'none';
+          document.getElementById('rr-tabs-container').style.display = 'flex';
         }
         
         // Initial silent render to populate the background
@@ -1386,11 +1387,11 @@
         document.getElementById('rr-back-btn').addEventListener('click', function () {
           modalWarning.style.display = 'block';
           modalCancel.style.display = 'block';
-          modalOverlay.hidden = false;
+          modalOverlay.style.display = 'flex';
         });
         
         document.getElementById('rr-modal-cancel').addEventListener('click', function() {
-          modalOverlay.hidden = true;
+          modalOverlay.style.display = 'none';
         });
 
 
