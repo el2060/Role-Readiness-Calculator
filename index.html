@@ -1363,19 +1363,15 @@
         });
 
         document.getElementById('rr-reset-self').addEventListener('click', function () {
-          if (window.confirm('Reset all self-assessment answers?')) {
-            selfScores = new Array(selfScores.length).fill(0);
-            renderSelfQuestions();
-            updateSelfSummary();
-          }
+          selfScores = new Array(selfScores.length).fill(0);
+          renderSelfQuestions();
+          updateSelfSummary();
         });
 
         document.getElementById('rr-reset-ro').addEventListener('click', function () {
-          if (window.confirm('Reset all RO evaluation selections?')) {
-            roScores = new Array(roScores.length).fill(false);
-            renderRoIndicators();
-            updateRoSummary();
-          }
+          roScores = new Array(roScores.length).fill(false);
+          renderRoIndicators();
+          updateRoSummary();
         });
 
         document.getElementById('rr-back-btn').addEventListener('click', function () {
