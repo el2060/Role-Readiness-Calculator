@@ -407,6 +407,37 @@
         color: #64748b;
       }
 
+      .rr-view-results-btn {
+        background: #002147;
+        color: #ffffff;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 8px 16px rgba(0,33,71,0.15);
+        transition: all 0.2s ease;
+      }
+      .rr-view-results-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(0,33,71,0.2);
+      }
+
+      @media (min-width: 901px) {
+        .rr-layout > .rr-stack:first-child {
+          position: sticky;
+          top: 24px;
+          align-self: start;
+          max-height: calc(100vh - 48px);
+          overflow-y: auto;
+          scrollbar-width: none;
+        }
+        .rr-layout > .rr-stack:first-child::-webkit-scrollbar {
+          display: none;
+        }
+      }
+
       @media (max-width: 900px) {
         .rr-layout {
           grid-template-columns: 1fr;
@@ -735,7 +766,7 @@
           <div class="rr-stack">
             <div class="rr-card">
               <h2>Readiness Profile</h2>
-              <p class="rr-category-caption">Average readiness by category, scaled to 10 points.</p>
+              <p class="rr-category-caption">Average readiness by category (scale of 1-5). Points closer to the outer edge indicate higher readiness, while points closer to the center highlight areas for potential development.</p>
               <svg id="rr-radar-chart" class="rr-chart" viewBox="0 0 320 320" role="img" aria-label="Readiness radar chart"></svg>
             </div>
             <div class="rr-card">
@@ -1119,6 +1150,11 @@
 
             html += '</section>';
           });
+          
+          html += '<div style="text-align: center; margin: 48px 0 48px;">
+            <div style="color: #94a3b8; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 24px;">— End of Assessment —</div>
+            <button type="button" class="rr-view-results-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">↑ View Results</button>
+          </div>';
 
           selfContent.innerHTML = html;
         }
@@ -1143,6 +1179,11 @@
 
             html += '</section>';
           });
+          
+          html += '<div style="text-align: center; margin: 48px 0 48px;">
+            <div style="color: #94a3b8; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 24px;">— End of Evaluation —</div>
+            <button type="button" class="rr-view-results-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">↑ View Results</button>
+          </div>';
 
           roContent.innerHTML = html;
         }
@@ -1160,7 +1201,7 @@
             currentIndex += category.questions.length;
             return {
               shortTitle: category.shortTitle,
-              score: average * 2
+              score: average
             };
           });
         }
@@ -1198,14 +1239,14 @@
 
           var valuePoints = [];
           for (var i = 0; i < total; i += 1) {
-            var valueRadius = (data[i].score / 10) * outerRadius;
+            var valueRadius = (data[i].score / 5) * outerRadius;
             var valuePoint = createRadarPoint(i, total, valueRadius, centerX, centerY);
             valuePoints.push(valuePoint.x.toFixed(2) + ',' + valuePoint.y.toFixed(2));
           }
           svg += '<polygon points="' + valuePoints.join(' ') + '" fill="#003580" fill-opacity="0.28" stroke="#002147" stroke-width="3"></polygon>';
 
           for (var j = 0; j < total; j += 1) {
-            var markerRadius = (data[j].score / 10) * outerRadius;
+            var markerRadius = (data[j].score / 5) * outerRadius;
             var markerPoint = createRadarPoint(j, total, markerRadius, centerX, centerY);
             var labelPoint = createRadarPoint(j, total, outerRadius + 28, centerX, centerY);
             svg += '<circle cx="' + markerPoint.x.toFixed(2) + '" cy="' + markerPoint.y.toFixed(2) + '" r="4" fill="#F5A800"></circle>';
