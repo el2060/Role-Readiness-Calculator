@@ -861,6 +861,20 @@
       /* Typography scale tweaks */
       h1, h2, h3 { letter-spacing: -0.03em !important; }
 
+    
+      /* Interactive Bar Styles */
+      .rr-interactive-bar {
+        cursor: pointer !important;
+        padding: 6px !important;
+        margin: -6px -6px 10px -6px !important;
+        border-radius: 8px !important;
+        transition: background 0.2s ease, transform 0.2s ease !important;
+      }
+      .rr-interactive-bar:hover, .rr-interactive-bar:active {
+        background: #e2e8f0 !important;
+        transform: translateX(4px) !important;
+      }
+
     </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
@@ -913,7 +927,7 @@
           <div class="rr-stack">
             <div class="rr-card">
               <h2>Readiness Profile</h2>
-              <p class="rr-category-caption" style="margin-bottom: 24px;">Average readiness by category (scale of 1-5). A full bar indicates high readiness in that specific competency.</p>
+              <p class="rr-category-caption" style="margin-bottom: 24px;">Average readiness by category (scale of 1-5). A full bar indicates high readiness. <strong style="color: #003580; display: block; margin-top: 8px;">👆 Tap any bar to jump to its section!</strong></p>
               <div id="rr-bar-chart"></div>
             </div>
             <div class="rr-card">
@@ -1280,7 +1294,7 @@
           var questionIndex = 0;
 
           activeCategories.forEach(function (category) {
-            html += '<section class="rr-category-block">';
+            html += '<section class="rr-category-block" id="rr-self-cat-' + activeCategories.indexOf(category) + '">';
             html += '<div class="rr-category-head"><h3>' + escapeHtml(category.title) + '</h3><div class="rr-divider"></div></div>';
 
             category.questions.forEach(function (question) {
@@ -1317,7 +1331,7 @@
           var indicatorIndex = 0;
 
           activeRoCategories.forEach(function (category) {
-            html += '<section class="rr-category-block">';
+            html += '<section class="rr-category-block" id="rr-self-cat-' + activeCategories.indexOf(category) + '">';
             html += '<div class="rr-category-head"><h3>' + escapeHtml(category.title) + '</h3><div class="rr-divider"></div></div>';
 
             category.indicators.forEach(function (indicator) {
@@ -1361,7 +1375,8 @@
           var html = '';
           data.forEach(function(cat) {
             var percentage = (cat.score / 5) * 100;
-            html += '<div class="rr-bar-row">';
+            var catIndex = data.indexOf(cat);
+            html += '<div class="rr-bar-row rr-interactive-bar" onclick="document.getElementById(\'rr-self-cat-' + catIndex + '\').scrollIntoView({behavior: \'smooth\', block: \'start\'})" title="Jump to ' + escapeHtml(cat.shortTitle) + '">';
             html += '<div class="rr-bar-label"><span>' + escapeHtml(cat.shortTitle) + '</span><span>' + cat.score.toFixed(1) + ' / 5.0</span></div>';
             html += '<div class="rr-bar-track"><div class="rr-bar-fill" style="width: ' + percentage + '%"></div></div>';
             html += '</div>';
