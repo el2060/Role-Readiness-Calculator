@@ -750,12 +750,25 @@
 
       <div id="rr-modal" class="rr-modal-overlay">
         <div class="rr-modal-card">
-          <h2 style="color: #002147; margin: 0 0 8px; font-size: 24px; text-align: center;">Welcome</h2>
-          <p style="color: #64748b; margin: 0 0 24px; text-align: center;">Please select your current grade to begin the assessment.</p>
-          <p id="rr-modal-warning" style="color: #b91c1c; margin: 0 0 24px; font-size: 13px; text-align: center; background: #fef2f2; padding: 8px 12px; border-radius: 8px; width: 100%; display: none;">Note: Changing your level will reset any current progress.</p>
-          <button class="rr-entry-btn" data-level="IPX8">IPX8 and below</button>
-          <button class="rr-entry-btn" data-level="IPX9">IPX9 and above</button>
-          <button id="rr-modal-cancel" style="margin-top: 12px; background: transparent; border: none; color: #64748b; font-weight: 600; cursor: pointer; padding: 8px; display: none;">Cancel</button>
+          <div id="rr-modal-step1">
+            <h2 style="color: #002147; margin: 0 0 8px; font-size: 24px; text-align: center;">Welcome</h2>
+            <p style="color: #64748b; margin: 0 0 24px; text-align: center;">Are you taking a self-assessment or evaluating a reportee?</p>
+            <button class="rr-role-btn" data-role="self">Self-Assessment</button>
+            <button class="rr-role-btn" data-role="ro">RO Evaluation</button>
+          </div>
+          <div id="rr-modal-step2" style="display: none;">
+            <h2 style="color: #002147; margin: 0 0 8px; font-size: 24px; text-align: center;">Select Grade</h2>
+            <p style="color: #64748b; margin: 0 0 24px; text-align: center;">Please select the current grade level.</p>
+            <p id="rr-modal-warning" style="color: #b91c1c; margin: 0 0 24px; font-size: 13px; text-align: center; background: #fef2f2; padding: 8px 12px; border-radius: 8px; width: 100%; display: none;">Note: Changing your level will reset any current progress.</p>
+            <button class="rr-entry-btn" data-level="IPX8">IPX8 and below</button>
+            <button class="rr-entry-btn" data-level="IPX9">IPX9 and above</button>
+            <div style="text-align: center;">
+              <button id="rr-modal-back-step" style="margin-top: 16px; background: transparent; color: #64748b; font-size: 14px; text-decoration: underline; cursor: pointer; border: none; font-weight: 500;">Go Back</button>
+            </div>
+            <div style="text-align: center;">
+              <button id="rr-modal-cancel" style="margin-top: 12px; background: transparent; border: none; color: #64748b; font-weight: 600; cursor: pointer; padding: 8px; display: none;">Cancel</button>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -766,8 +779,8 @@
           <div class="rr-stack">
             <div class="rr-card">
               <h2>Readiness Profile</h2>
-              <p class="rr-category-caption">Average readiness by category (scale of 1-5). Points closer to the outer edge indicate higher readiness, while points closer to the center highlight areas for potential development.</p>
-              <svg id="rr-radar-chart" class="rr-chart" viewBox="0 0 320 320" role="img" aria-label="Readiness radar chart"></svg>
+              <p class="rr-category-caption" style="margin-bottom: 24px;">Average readiness by category (scale of 1-5). A full bar indicates high readiness in that specific competency.</p>
+              <div id="rr-bar-chart"></div>
             </div>
             <div class="rr-card">
               <div class="rr-progress-meta">
@@ -1057,12 +1070,15 @@
         var roProgressLabel = document.getElementById('rr-ro-progress-label');
         var roTotal = document.getElementById('rr-ro-total');
         var roProgressFill = document.getElementById('rr-ro-progress-fill');
-        var radarChart = document.getElementById('rr-radar-chart');
+        
         var tabButtons = document.querySelectorAll('.rr-tab-button');
         var modalOverlay = document.getElementById('rr-modal');
+        var modalStep1 = document.getElementById('rr-modal-step1');
+        var modalStep2 = document.getElementById('rr-modal-step2');
         var modalWarning = document.getElementById('rr-modal-warning');
         var modalCancel = document.getElementById('rr-modal-cancel');
         var hasStarted = false;
+        var pendingRole = 'self';
         
         function initAppForLevel(level) {
           if (hasStarted && currentIpxLevel === level) {
@@ -1070,6 +1086,7 @@
             modalOverlay.style.display = 'none';
             document.getElementById('rr-tabs-container').hidden = false;
             document.getElementById('rr-tabs-container').style.display = 'flex';
+            activatePanel(pendingRole);
             return;
           }
           
@@ -1100,6 +1117,8 @@
           modalOverlay.style.display = 'none';
           document.getElementById('rr-tabs-container').hidden = false;
           document.getElementById('rr-tabs-container').style.display = 'flex';
+          
+          activatePanel(pendingRole);
         }
         
         // Initial silent render to populate the background
@@ -1203,54 +1222,17 @@
           });
         }
 
-        function createRadarPoint(index, total, radius, centerX, centerY) {
-          var angle = ((Math.PI * 2) / total) * index - Math.PI / 2;
-          return {
-            x: centerX + Math.cos(angle) * radius,
-            y: centerY + Math.sin(angle) * radius
-          };
-        }
-
         function updateRadarChart() {
           var data = getCategoryScores();
-          var total = data.length;
-          var centerX = 160;
-          var centerY = 160;
-          var outerRadius = 98;
-          var svg = '';
-
-          for (var level = 1; level <= 5; level += 1) {
-            var gridRadius = (outerRadius / 5) * level;
-            var gridPoints = [];
-            for (var g = 0; g < total; g += 1) {
-              var gridPoint = createRadarPoint(g, total, gridRadius, centerX, centerY);
-              gridPoints.push(gridPoint.x.toFixed(2) + ',' + gridPoint.y.toFixed(2));
-            }
-            svg += '<polygon points="' + gridPoints.join(' ') + '" fill="none" stroke="#E8E9EA" stroke-width="1"></polygon>';
-          }
-
-          for (var a = 0; a < total; a += 1) {
-            var axisPoint = createRadarPoint(a, total, outerRadius, centerX, centerY);
-            svg += '<line x1="' + centerX + '" y1="' + centerY + '" x2="' + axisPoint.x.toFixed(2) + '" y2="' + axisPoint.y.toFixed(2) + '" stroke="#cbd5e1" stroke-width="1"></line>';
-          }
-
-          var valuePoints = [];
-          for (var i = 0; i < total; i += 1) {
-            var valueRadius = (data[i].score / 5) * outerRadius;
-            var valuePoint = createRadarPoint(i, total, valueRadius, centerX, centerY);
-            valuePoints.push(valuePoint.x.toFixed(2) + ',' + valuePoint.y.toFixed(2));
-          }
-          svg += '<polygon points="' + valuePoints.join(' ') + '" fill="#003580" fill-opacity="0.28" stroke="#002147" stroke-width="3"></polygon>';
-
-          for (var j = 0; j < total; j += 1) {
-            var markerRadius = (data[j].score / 5) * outerRadius;
-            var markerPoint = createRadarPoint(j, total, markerRadius, centerX, centerY);
-            var labelPoint = createRadarPoint(j, total, outerRadius + 28, centerX, centerY);
-            svg += '<circle cx="' + markerPoint.x.toFixed(2) + '" cy="' + markerPoint.y.toFixed(2) + '" r="4" fill="#F5A800"></circle>';
-            svg += '<text x="' + labelPoint.x.toFixed(2) + '" y="' + labelPoint.y.toFixed(2) + '" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#475569">' + escapeHtml(data[j].shortTitle) + '</text>';
-          }
-
-          radarChart.innerHTML = svg;
+          var html = '';
+          data.forEach(function(cat) {
+            var percentage = (cat.score / 5) * 100;
+            html += '<div class="rr-bar-row">';
+            html += '<div class="rr-bar-label"><span>' + escapeHtml(cat.shortTitle) + '</span><span>' + cat.score.toFixed(1) + ' / 5.0</span></div>';
+            html += '<div class="rr-bar-track"><div class="rr-bar-fill" style="width: ' + percentage + '%"></div></div>';
+            html += '</div>';
+          });
+          document.getElementById('rr-bar-chart').innerHTML = html;
         }
 
         function updateSelfSummary() {
@@ -1325,6 +1307,21 @@
         }
 
         document.addEventListener('click', function (event) {
+          var roleBtn = event.target.closest('.rr-role-btn');
+          if (roleBtn) {
+            pendingRole = roleBtn.getAttribute('data-role');
+            modalStep1.style.display = 'none';
+            modalStep2.style.display = 'block';
+            return;
+          }
+          
+          var backStepBtn = event.target.closest('#rr-modal-back-step');
+          if (backStepBtn) {
+            modalStep2.style.display = 'none';
+            modalStep1.style.display = 'block';
+            return;
+          }
+
           var entryBtn = event.target.closest('.rr-entry-btn');
           if (entryBtn) {
             initAppForLevel(entryBtn.getAttribute('data-level'));
@@ -1377,6 +1374,8 @@
         });
 
         document.getElementById('rr-back-btn').addEventListener('click', function () {
+          modalStep1.style.display = 'block';
+          modalStep2.style.display = 'none';
           modalWarning.style.display = 'block';
           modalCancel.style.display = 'block';
           modalOverlay.style.display = 'flex';
