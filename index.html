@@ -1377,7 +1377,7 @@
             var percentage = (cat.score / 5) * 100;
             var catIndex = data.indexOf(cat);
             html += '<div class="rr-bar-row rr-interactive-bar" onclick="document.getElementById(\'rr-self-cat-' + catIndex + '\').scrollIntoView({behavior: \'smooth\', block: \'start\'})" title="Jump to ' + escapeHtml(cat.shortTitle) + '">';
-            html += '<div class="rr-bar-label"><span>' + escapeHtml(cat.shortTitle) + '</span><span>' + cat.score.toFixed(1) + ' / 5.0</span></div>';
+            html += '<div class="rr-bar-label"><span>' + escapeHtml(cat.shortTitle) + '</span><span>' + cat.score.toFixed(1) + '</span></div>';
             html += '<div class="rr-bar-track"><div class="rr-bar-fill" style="width: ' + percentage + '%"></div></div>';
             html += '</div>';
           });
