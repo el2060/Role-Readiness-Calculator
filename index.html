@@ -979,7 +979,7 @@
                 </div>
                 <div>
                   <div id="rr-ro-total" class="rr-progress-value rr-ro-progress-value">0%</div>
-                  <div class="rr-progress-label">Completion</div>
+                  <div class="rr-progress-label">Readiness %</div>
                 </div>
               </div>
               <div class="rr-progress-track">
@@ -1394,7 +1394,7 @@
           var progress = (answeredCount / selfScores.length) * 100;
 
           selfProgressLabel.textContent = answeredCount + ' of ' + selfScores.length + ' answered';
-          selfTotal.textContent = totalScore;
+          selfTotal.innerHTML = totalScore + '<span style="font-size: 16px; color: #64748b; font-weight: 500;"> / ' + (selfScores.length * 5) + '</span>';
           selfProgressFill.style.width = progress + '%';
 
           if (answeredCount === selfScores.length) {
