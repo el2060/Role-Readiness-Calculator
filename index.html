@@ -5,876 +5,233 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ES Role Readiness Assessment</title>
     <style>
-      .rr-app,
-      .rr-app * {
-        box-sizing: border-box;
+      :root {
+        --background: #ffffff;
+        --foreground: #020817;
+        --muted: #f1f5f9;
+        --muted-foreground: #64748b;
+        --border: #e2e8f0;
+        --input: #e2e8f0;
+        --primary: #002147;
+        --primary-foreground: #f8fafc;
+        --destructive: #ef4444;
+        --destructive-foreground: #f8fafc;
+        --ring: #94a3b8;
+        --radius: 0.5rem;
       }
-
+      
+      .rr-app, .rr-app * { box-sizing: border-box; }
+      
       body {
         margin: 0;
         background: #f8fafc;
-        color: #0f172a;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: -0.01em;
+        color: var(--foreground);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
       }
 
       .rr-app {
-        max-width: 1180px;
+        max-width: 1200px;
         margin: 0 auto;
-        padding: 24px 16px 40px;
+        padding: 32px 16px 64px;
       }
 
+      h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.025em; color: var(--foreground); }
+      p { margin: 0; color: var(--muted-foreground); }
+      
       .rr-header {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(226, 232, 240, 0.5);
-        border-radius: 24px;
-        padding: 20px;
-        margin-bottom: 24px;
-        box-shadow: 0 4px 24px rgba(0, 33, 71, 0.04);
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 1.5);
+        padding: 24px;
+        margin-bottom: 32px;
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       }
-
-      .rr-brand {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-      }
-
-      .rr-brand-copy {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-
-      .rr-logo {
-        height: 36px;
-        width: auto;
-        display: block;
-      }
-
-      .rr-brand h1 {
-        margin: 0;
-        font-size: 32px; letter-spacing: -0.02em;
-        line-height: 1.1;
-        color: #002147;
-      }
-
-      .rr-brand p {
-        margin: 6px 0 0;
-        color: #53565A;
-        font-size: 14px;
-      }
-
+      .rr-brand { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+      .rr-brand-copy { display: flex; align-items: center; gap: 16px; }
+      .rr-logo { height: 40px; width: auto; display: block; }
+      .rr-brand h1 { font-size: 24px; }
+      
       .rr-tabs {
         display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+        background: var(--muted);
+        padding: 4px;
+        border-radius: 9999px;
+        gap: 4px;
       }
-
-      .rr-tab-button,
-      .rr-score-button,
-      .rr-reset-button,
-      .rr-indicator-button {
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
-        color: #334155;
+      .rr-tab-button {
+        background: transparent;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 9999px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--muted-foreground);
         cursor: pointer;
-        font: inherit;
+        transition: all 0.2s ease;
       }
-      .rr-tab-button {
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
-        color: #334155;
-      }
-
-      .rr-tab-button {
-        padding: 12px 18px;
-        border-radius: 999px;
-        font-weight: 700;
-      }
-
+      .rr-tab-button:hover { color: var(--foreground); }
       .rr-tab-button.rr-active {
-        background: #002147;
-        border-color: #002147;
-        color: #ffffff;
+        background: var(--background);
+        color: var(--foreground);
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
       }
+      #rr-back-btn { font-size: 14px; padding: 8px 16px; background: transparent; border: none; font-weight: 500; color: var(--muted-foreground); cursor: pointer; }
+      #rr-back-btn:hover { color: var(--foreground); }
 
-      .rr-panel[hidden],
-      [hidden] {
-        display: none !important;
-      }
-
-      .rr-layout {
-        display: grid;
-        grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
-        gap: 24px;
-        align-items: start;
-      }
-
-      .rr-stack {
-        display: grid;
-        gap: 18px;
-      }
+      .rr-panel[hidden], [hidden] { display: none !important; }
+      .rr-layout { display: grid; grid-template-columns: 320px 1fr; gap: 32px; align-items: start; }
+      @media (max-width: 900px) { .rr-layout { grid-template-columns: 1fr; } }
+      .rr-stack { display: grid; gap: 24px; }
 
       .rr-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 24px;
-        padding: 20px;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+        background: var(--background);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
       }
-
-      .rr-card h2,
-      .rr-card h3,
-      .rr-card h4,
-      .rr-section-title {
-        margin: 0 0 10px;
-        color: #0f172a;
-      }
-
-      .rr-help {
-        background: #eff6ff;
-        border-color: #dbeafe;
-      }
-
-      .rr-help.ro {
-        background: #eff6ff;
-        border-color: #dbeafe;
-      }
+      .rr-card h2 { font-size: 20px; margin-bottom: 8px; }
+      .rr-card h3 { font-size: 18px; margin-bottom: 8px; }
       
-      .rr-entry-panel {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        text-align: center;
-      }
-      .rr-entry-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 24px;
-        padding: 48px 40px;
-        max-width: 440px;
-        width: 100%;
-        box-shadow: 0 12px 48px rgba(0, 33, 71, 0.06);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .rr-entry-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        padding: 16px;
-        margin-bottom: 12px;
-        border-radius: 16px;
-        border: 1px solid #e2e8f0;
-        background: #ffffff;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 600;
-        color: #334155;
-        transition: all 0.2s ease;
-      }
-      .rr-entry-btn:hover {
-        border-color: #002147;
-        background: #f8fafc;
-        color: #002147;
-      }
+      .rr-help { background: var(--muted); border-color: var(--border); box-shadow: none; }
+      .rr-help p { color: var(--foreground); font-size: 14px; }
+      .rr-help.ro { background: #f0fdf4; border-color: #bbf7d0; }
 
-      .rr-help p,
-      .rr-card p,
-      .rr-question-text,
-      .rr-category-caption {
-        margin: 0;
-        color: #334155;
-      }
-
-      .rr-progress-meta,
-      .rr-progress-row {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 12px;
-      }
-
-      .rr-progress-row {
-        align-items: center;
-        margin-top: 16px;
-      }
-
-      .rr-progress-label {
-        color: #475569;
-        font-size: 14px;
-      }
-
-      .rr-progress-value {
-        font-size: 32px;
-        font-weight: 700;
-        color: #002147;
-        line-height: 1;
-      }
-
-      .rr-ro-progress-value {
-        color: #059669;
-      }
-
-      .rr-progress-track {
-        width: 100%;
-        height: 10px;
-        border-radius: 999px;
-        background: #e2e8f0;
-        overflow: hidden;
-        margin-top: 16px;
-      }
-
-      .rr-progress-fill {
-        width: 0;
-        height: 100%;
-        background: #002147;
-        border-radius: 999px;
-      }
-
-      .rr-progress-fill.ro {
-        background: #10b981;
-      }
-
+      .rr-progress-meta { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+      .rr-progress-label { color: var(--muted-foreground); font-size: 14px; font-weight: 500; }
+      .rr-progress-value { font-size: 36px; font-weight: 700; color: var(--foreground); line-height: 1; letter-spacing: -0.05em; }
+      .rr-progress-track { width: 100%; height: 8px; border-radius: 9999px; background: var(--muted); overflow: hidden; margin-top: 16px; }
+      .rr-progress-fill { width: 0; height: 100%; background: var(--primary); border-radius: 9999px; transition: width 0.5s ease; }
+      .rr-progress-fill.ro { background: #16a34a; }
+      .rr-ro-progress-value { color: #16a34a; }
+      .rr-progress-row { display: flex; align-items: center; justify-content: space-between; margin-top: 24px; }
+      
       .rr-summary-message {
-        margin-top: 16px;
-        padding: 14px;
-        border-radius: 16px;
-        background: #F5F6F7;
-        color: #001530;
-        font-weight: 700;
-        display: none;
+        margin-top: 24px; padding: 16px; border-radius: var(--radius);
+        background: var(--muted); border: 1px solid var(--border);
+        font-size: 14px; font-weight: 500; display: none;
       }
 
-      .rr-chart {
-        width: 100%;
-        max-width: 320px;
-        display: block;
-        margin: 12px auto 0;
+      .rr-reset-button, .rr-export-button, .rr-view-results-btn, .rr-entry-btn, .rr-role-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: calc(var(--radius) - 2px); font-size: 14px; font-weight: 500;
+        cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent;
       }
+      .rr-reset-button { padding: 8px 16px; background: transparent; border-color: var(--input); color: var(--foreground); }
+      .rr-reset-button:hover { background: var(--muted); }
+      
+      .rr-export-button { width: 100%; padding: 10px 16px; background: var(--background); border-color: var(--input); color: var(--foreground); gap: 8px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+      .rr-export-button:hover { background: var(--muted); }
+      .rr-export-button svg { width: 16px; height: 16px; }
+      
+      .rr-view-results-btn { padding: 12px 24px; background: var(--foreground); color: var(--background); box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); }
+      .rr-view-results-btn:hover { background: #334155; }
+      
+      .rr-entry-btn, .rr-role-btn { width: 100%; padding: 12px 16px; background: var(--background); border-color: var(--input); color: var(--foreground); margin-bottom: 12px; font-size: 15px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+      .rr-entry-btn:hover, .rr-role-btn:hover { background: var(--muted); }
 
-      .rr-question-list,
-      .rr-indicator-list {
-        display: grid;
-        gap: 16px;
+      .rr-question-list, .rr-indicator-list { display: grid; gap: 24px; }
+      .rr-category-block { display: grid; gap: 16px; }
+      .rr-category-head { display: flex; align-items: center; gap: 16px; }
+      .rr-category-head h3 { font-size: 20px; color: var(--foreground); }
+      .rr-divider { flex: 1; height: 1px; background: var(--border); }
+      
+      .rr-question-card, .rr-indicator-card {
+        background: var(--background); border: 1px solid var(--border);
+        border-radius: var(--radius); padding: 24px;
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        transition: border-color 0.2s ease;
       }
-
-      .rr-category-block {
-        display: grid;
-        gap: 14px;
-      }
-
-      .rr-category-head {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-
-      .rr-category-head h3 {
-        margin: 0;
-        font-size: 24px; font-weight: 700; color: #002147;
-      }
-
-      .rr-divider {
-        flex: 1;
-        height: 1px;
-        background: #cbd5e1;
-      }
-
-      .rr-question-card,
-      .rr-indicator-card {
-        border: 1px solid #e2e8f0;
-        border-radius: 22px;
-        padding: 18px;
-        background: #ffffff;
-      }
-
-      .rr-question-card.rr-answered {
-        border-color: #E8E9EA;
-        background: #FFFFFF;
-      }
-
-      .rr-question-header {
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
-        margin-bottom: 16px;
-      }
-
+      .rr-question-card.rr-answered { border-color: var(--input); background: #fafafa; }
+      
+      .rr-question-header { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px; }
       .rr-question-number {
-        width: 32px;
-        height: 32px;
-        border-radius: 999px;
-        background: #F5F6F7;
-        color: #F5A800;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
-        font-weight: 700;
-        flex-shrink: 0;
+        width: 28px; height: 28px; border-radius: 9999px; background: var(--muted);
+        color: var(--muted-foreground); display: flex; align-items: center; justify-content: center;
+        font-size: 13px; font-weight: 600; flex-shrink: 0;
       }
-
-      .rr-score-grid {
-        display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 8px;
-      }
-
+      .rr-question-card.rr-answered .rr-question-number { background: var(--primary); color: var(--primary-foreground); }
+      .rr-question-text { font-size: 15px; font-weight: 500; color: var(--foreground); }
+      
+      .rr-score-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+      @media (max-width: 640px) { .rr-score-grid { grid-template-columns: repeat(2, 1fr); } .rr-score-grid .rr-score-button:last-child { grid-column: 1 / -1; } }
+      
       .rr-score-button {
-        border-radius: 16px;
-        padding: 12px 6px;
-        min-height: 82px;
+        background: var(--background); border: 1px solid var(--input);
+        border-radius: calc(var(--radius) - 2px); padding: 12px 8px;
+        cursor: pointer; transition: all 0.2s ease; text-align: center;
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       }
+      .rr-score-button:hover { background: var(--muted); border-color: var(--border); }
+      .rr-score-button.rr-selected { border-color: var(--primary); background: var(--primary); color: var(--primary-foreground); }
+      .rr-score-button strong { display: block; font-size: 18px; margin-bottom: 4px; }
+      .rr-score-button span { display: block; font-size: 12px; color: var(--muted-foreground); }
+      .rr-score-button.rr-selected span { color: rgba(255,255,255,0.8); }
 
-      .rr-score-button strong {
-        display: block;
-        font-size: 20px;
-        margin-bottom: 4px;
-      }
-
-      .rr-score-button span {
-        display: block;
-        font-size: 11px;
-        line-height: 1.3;
-        color: #64748b;
-      }
-
-      .rr-score-button.rr-selected {
-        background: #002147;
-        border-color: #002147;
-        color: #ffffff;
-      }
-
-      .rr-score-button.rr-selected span {
-        color: #F5A800;
-      }
-
-      .rr-indicator-card {
-        display: flex;
-        gap: 14px;
-        align-items: flex-start;
-        justify-content: space-between;
-      }
-
-      .rr-indicator-card.rr-met {
-        border-color: #a7f3d0;
-        background: #ecfdf5;
-      }
-
-      .rr-indicator-copy {
-        flex: 1;
-      }
-
-      .rr-indicator-index {
-        font-weight: 700;
-        color: #0f172a;
-        margin-right: 6px;
-      }
-
+      .rr-indicator-card { display: flex; gap: 24px; align-items: center; justify-content: space-between; }
+      .rr-indicator-card.rr-met { border-color: #86efac; background: #f0fdf4; }
+      .rr-indicator-copy { flex: 1; font-size: 14px; font-weight: 500; color: var(--foreground); }
+      .rr-indicator-index { color: var(--muted-foreground); margin-right: 8px; }
+      
       .rr-indicator-button {
-        min-width: 132px;
-        padding: 10px 12px;
-        border-radius: 999px;
-        font-weight: 700;
-        color: #b91c1c;
-        background: #fef2f2;
-        border-color: #fecaca;
+        background: var(--background); border: 1px solid var(--input);
+        color: var(--muted-foreground); padding: 8px 16px; border-radius: 9999px;
+        font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s ease;
+        flex-shrink: 0; min-width: 140px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       }
+      .rr-indicator-button:hover { background: var(--muted); }
+      .rr-indicator-button.rr-selected { background: #16a34a; border-color: #16a34a; color: #ffffff; }
 
-      .rr-indicator-button.rr-selected {
-        color: #065f46;
-        background: #d1fae5;
-        border-color: #6ee7b7;
-      }
+      .rr-bar-row { margin-bottom: 16px; cursor: pointer; padding: 8px; border-radius: var(--radius); transition: background 0.2s ease; margin-left: -8px; margin-right: -8px; }
+      .rr-bar-row:hover { background: var(--muted); }
+      .rr-bar-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 500; color: var(--foreground); margin-bottom: 8px; }
+      .rr-bar-track { background: var(--input); border-radius: 9999px; height: 8px; overflow: hidden; }
+      .rr-bar-fill { background: var(--primary); height: 100%; border-radius: 9999px; transition: width 0.5s ease; }
 
-      .rr-reset-button {
-        padding: 10px 14px;
-        border-radius: 12px;
-        font-weight: 700;
+      .rr-modal-overlay {
+        position: fixed; inset: 0; z-index: 100;
+        background: rgba(2, 8, 23, 0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+        display: flex; align-items: center; justify-content: center;
       }
-
-      .rr-small-note {
-        margin-top: 12px;
-        font-size: 12px;
-        color: #64748b;
+      .rr-modal-card {
+        background: var(--background); border: 1px solid var(--border);
+        border-radius: calc(var(--radius) * 1.5); padding: 32px;
+        width: 100%; max-width: 400px;
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        animation: modalIn 0.2s ease-out;
       }
-
-      .rr-view-results-btn {
-        background: #002147;
-        color: #ffffff;
-        border: none;
-        padding: 14px 28px;
-        border-radius: 999px;
-        font-weight: 700;
-        font-size: 16px;
-        cursor: pointer;
-        box-shadow: 0 8px 16px rgba(0,33,71,0.15);
-        transition: all 0.2s ease;
-      }
-      .rr-view-results-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 24px rgba(0,33,71,0.2);
-      }
+      @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+      .rr-category-caption { font-size: 13px; margin-bottom: 24px; color: var(--muted-foreground); }
 
       @media (min-width: 901px) {
         .rr-layout > .rr-stack:first-child {
-          position: sticky;
-          top: 24px;
-          align-self: start;
-          max-height: calc(100vh - 48px);
-          overflow-y: auto;
-          scrollbar-width: none;
+          position: sticky; top: 32px; max-height: calc(100vh - 64px);
+          overflow-y: auto; scrollbar-width: none;
         }
-        .rr-layout > .rr-stack:first-child::-webkit-scrollbar {
-          display: none;
-        }
-      }
-
-      @media (max-width: 900px) {
-        .rr-layout {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      @media (max-width: 640px) {
-        .rr-brand h1 {
-          font-size: 24px;
-        }
-
-        .rr-score-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .rr-score-grid .rr-score-button:last-child {
-          grid-column: 1 / -1;
-        }
-
-        .rr-indicator-card {
-          flex-direction: column;
-        }
-
-        .rr-indicator-button {
-          width: 100%;
-        }
-      }
-    
-      .rr-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 100;
-      }
-      .rr-modal-overlay[hidden] {
-        display: none !important;
-      }
-      .rr-modal-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 24px;
-        padding: 48px 40px;
-        max-width: 440px;
-        width: calc(100% - 32px);
-        box-shadow: 0 24px 64px rgba(0, 33, 71, 0.12);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        animation: modalFadeIn 0.3s ease-out;
-      }
-      @keyframes modalFadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        .rr-layout > .rr-stack:first-child::-webkit-scrollbar { display: none; }
       }
 
       @media print {
-        @page {
-          size: A4 portrait;
-          margin: 1.5cm 1.5cm 2cm 1.5cm;
-        }
-        
-        /* Hide interactive/UI elements */
-        .rr-tabs, #rr-back-btn, .rr-reset-button, #rr-export-pdf-self, #rr-export-pdf-ro, .rr-small-note, .rr-help, .rr-progress-track, .rr-progress-row, #rr-modal {
-          display: none !important;
-        }
-        
-        body {
-          background: #ffffff !important;
-          color: #000000 !important;
-          font-size: 11pt !important;
-        }
-        
-        * {
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
-        
-        .rr-app {
-          max-width: 100% !important;
-          padding: 0 !important;
-        }
-        
-        /* Header styling for print */
-        .rr-header {
-          border-radius: 0 !important;
-          border: none !important;
-          border-bottom: 2px solid #002147 !important;
-          padding: 0 0 16px 0 !important;
-          margin-bottom: 32px !important;
-          background: transparent !important;
-          box-shadow: none !important;
-        }
-        
-        /* Layout */
-        .rr-layout {
-          display: block;
-        }
-        
-        .rr-card {
-          box-shadow: none !important;
-          border: 1px solid #e2e8f0 !important;
-          border-radius: 12px !important;
-          padding: 24px !important;
-          margin-bottom: 32px !important;
-          page-break-inside: avoid;
-        }
-        
-        /* Top cards layout (Radar + Score) - display side-by-side */
-        .rr-stack {
-          display: flex;
-          flex-direction: row;
-          gap: 24px;
-          margin-bottom: 32px;
-        }
-        .rr-stack .rr-card {
-          flex: 1;
-          margin-bottom: 0 !important;
-        }
-        .rr-stack:last-child {
-          display: block;
-        }
-        
-        /* Questions list styling */
-        .rr-category-block {
-          margin-bottom: 32px !important;
-          page-break-inside: avoid;
-        }
-        .rr-category-head h3 {
-          font-size: 20px !important;
-          color: #002147 !important;
-          border-bottom: 1px solid #cbd5e1;
-          padding-bottom: 8px;
-          margin-bottom: 16px !important;
-        }
-        .rr-divider {
-          display: none !important;
-        }
-        
-        .rr-question-card {
-          box-shadow: none !important;
-          border: none !important;
-          border-bottom: 1px dashed #cbd5e1 !important;
-          border-radius: 0 !important;
-          padding: 16px 0 !important;
-          background: transparent !important;
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-        .rr-question-card:last-child {
-          border-bottom: none !important;
-        }
-        
-        .rr-question-header {
-          align-items: center;
-        }
-        .rr-question-number {
-          background: #002147 !important;
-          color: #fff !important;
-          border: none !important;
-          width: 28px !important;
-          height: 28px !important;
-          font-size: 12px !important;
-        }
-        
-        /* Score grid for print */
-        .rr-score-grid {
-          margin-top: 12px !important;
-          gap: 8px !important;
-        }
-        .rr-score-button {
-          min-height: auto !important;
-          padding: 8px 4px !important;
-          border: 1px solid #e2e8f0 !important;
-          background: #f8fafc !important;
-          opacity: 1 !important;
-        }
-        .rr-score-button.rr-selected {
-          border: 1px solid #002147 !important;
-          background: #002147 !important;
-          color: #ffffff !important;
-        }
-        .rr-score-button.rr-selected span {
-          color: #F5A800 !important;
-        }
-        
-        /* RO Indicators */
-        .rr-indicator-card {
-          box-shadow: none !important;
-          border: none !important;
-          border-bottom: 1px dashed #cbd5e1 !important;
-          border-radius: 0 !important;
-          padding: 12px 0 !important;
-          background: transparent !important;
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-        .rr-indicator-card:last-child {
-          border-bottom: none !important;
-        }
-        .rr-indicator-button {
-          border: 1px solid #e2e8f0 !important;
-          background: #fef2f2 !important;
-          color: #b91c1c !important;
-        }
-        .rr-indicator-button.rr-selected {
-          border-color: #065f46 !important;
-          background: #d1fae5 !important;
-          color: #065f46 !important;
-        }
-        
-        .rr-chart {
-          max-width: 200px !important;
-          margin: 0 auto !important;
-          display: block !important;
-        }
-        .rr-progress-value {
-          font-size: 36px !important;
-          font-weight: 800 !important;
-          color: #002147 !important;
-        }
-        
-        .rr-summary-message {
-          font-size: 14pt !important;
-          padding: 16px !important;
-          background: #f8fafc !important;
-          border: 1px solid #e2e8f0 !important;
-        }
+        @page { size: A4 portrait; margin: 1.5cm; }
+        body { background: #ffffff !important; color: #000000 !important; font-size: 10pt !important; }
+        .rr-tabs, #rr-back-btn, .rr-reset-button, #rr-export-pdf-self, #rr-export-pdf-ro, .rr-help, .rr-progress-track, .rr-progress-row, #rr-modal { display: none !important; }
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        .rr-app { max-width: 100% !important; padding: 0 !important; }
+        .rr-header { border: none !important; border-bottom: 1px solid var(--border) !important; padding: 0 0 16px !important; margin-bottom: 24px !important; box-shadow: none !important; background: transparent !important; }
+        .rr-layout { display: block; }
+        .rr-card { box-shadow: none !important; padding: 16px !important; margin-bottom: 24px !important; page-break-inside: avoid; }
+        .rr-stack { display: flex; flex-direction: row; gap: 24px; margin-bottom: 24px; }
+        .rr-stack .rr-card { flex: 1; margin-bottom: 0 !important; }
+        .rr-stack:last-child { display: block; }
+        .rr-category-block { margin-bottom: 24px !important; page-break-inside: avoid; }
+        .rr-question-card, .rr-indicator-card { box-shadow: none !important; border: none !important; border-bottom: 1px solid var(--border) !important; border-radius: 0 !important; padding: 12px 0 !important; background: transparent !important; page-break-inside: avoid; }
+        .rr-score-button { min-height: auto !important; padding: 8px 4px !important; background: transparent !important; border: 1px solid var(--border) !important; box-shadow: none !important; }
+        .rr-score-button.rr-selected { background: var(--primary) !important; color: white !important; }
       }
-
-      /* Enhanced UI/UX Styles */
-      .rr-app {
-        max-width: 1240px;
-      }
-      .rr-header {
-        border-top: none;
-      }
-      .rr-card {
-        box-shadow: 0 4px 24px rgba(0, 33, 71, 0.04);
-        transition: box-shadow 0.3s ease;
-      }
-      .rr-card:hover {
-        box-shadow: 0 8px 32px rgba(0, 33, 71, 0.08);
-      }
-      .rr-question-card {
-        padding: 24px;
-        transition: all 0.3s ease;
-      }
-      .rr-score-button {
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      .rr-score-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 33, 71, 0.08);
-      }
-      .rr-score-button:active {
-        transform: translateY(0);
-      }
-      .rr-export-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: #F5F6F7;
-        color: #002147;
-        border: 1px solid #E8E9EA;
-        padding: 10px 16px;
-        border-radius: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        margin-top: 16px;
-        width: 100%;
-        justify-content: center;
-      }
-      .rr-export-button:hover {
-        background: #E8E9EA;
-        border-color: #cbd5e1;
-      }
-      .rr-export-button svg {
-        width: 16px;
-        height: 16px;
-      }
-
-    
-      /* --- PREMIUM UI UX OVERHAUL --- */
-      body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-        background: #f1f5f9;
-      }
-      
-      .rr-modal-overlay {
-        background: rgba(15, 23, 42, 0.4) !important;
-        backdrop-filter: blur(8px) !important;
-        -webkit-backdrop-filter: blur(8px) !important;
-      }
-      .rr-modal-card {
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-        border-radius: 24px !important;
-        padding: 40px !important;
-        animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-        align-items: stretch !important;
-      }
-      
-      .rr-entry-btn, .rr-role-btn {
-        width: 100% !important;
-        padding: 16px !important;
-        margin-top: 12px !important;
-        margin-bottom: 0px !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 12px !important;
-        background: #ffffff !important;
-        color: #002147 !important;
-        font-weight: 600 !important;
-        font-size: 16px !important;
-        cursor: pointer !important;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-      }
-      .rr-entry-btn:hover, .rr-role-btn:hover {
-        background: #003580 !important;
-        color: white !important;
-        border-color: #003580 !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 10px 15px -3px rgba(0, 53, 128, 0.2) !important;
-      }
-      
-      /* Bar Chart CSS */
-      .rr-bar-row {
-        margin-bottom: 16px;
-      }
-      .rr-bar-label {
-        display: flex;
-        justify-content: space-between;
-        font-size: 13px;
-        font-weight: 600;
-        color: #475569;
-        margin-bottom: 6px;
-      }
-      .rr-bar-track {
-        background: #e2e8f0;
-        border-radius: 8px;
-        height: 12px;
-        overflow: hidden;
-      }
-      .rr-bar-fill {
-        background: linear-gradient(90deg, #003580, #0056d6);
-        height: 100%;
-        width: 0%;
-        transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
-        border-radius: 8px;
-      }
-      
-      /* Card Hover Effects */
-      .rr-question-card, .rr-indicator-card {
-        border-radius: 16px !important;
-        border: 1px solid #f1f5f9 !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
-        transition: all 0.3s ease !important;
-      }
-      .rr-question-card:hover, .rr-indicator-card:hover {
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
-        transform: translateY(-2px) !important;
-      }
-      
-      /* Rating Button Improvements */
-      .rr-score-button {
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        border-radius: 12px !important;
-        border: 1px solid #e2e8f0 !important;
-      }
-      .rr-score-button:hover {
-        border-color: #94a3b8 !important;
-        transform: scale(1.05) !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-        background: #ffffff !important;
-      }
-      .rr-score-button.rr-selected {
-        background: #003580 !important;
-        color: white !important;
-        border-color: #003580 !important;
-        box-shadow: 0 4px 14px 0 rgba(0, 53, 128, 0.39) !important;
-        transform: scale(1.05) !important;
-      }
-      .rr-score-button strong {
-        font-size: 20px !important;
-      }
-      
-      /* Pill Tabs */
-      .rr-tabs {
-        display: flex !important;
-        background: #e2e8f0 !important;
-        padding: 4px !important;
-        border-radius: 9999px !important;
-        border: none !important;
-        gap: 4px !important;
-      }
-      .rr-tab-button {
-        background: transparent !important;
-        border: none !important;
-        padding: 12px 24px !important;
-        border-radius: 9999px !important;
-        font-weight: 600 !important;
-        color: #64748b !important;
-        transition: all 0.3s ease !important;
-      }
-      .rr-tab-button.rr-active {
-        background: #ffffff !important;
-        color: #002147 !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-      }
-      
-      /* Typography scale tweaks */
-      h1, h2, h3 { letter-spacing: -0.03em !important; }
-
-    
-      /* Interactive Bar Styles */
-      .rr-interactive-bar {
-        cursor: pointer !important;
-        padding: 6px !important;
-        margin: -6px -6px 10px -6px !important;
-        border-radius: 8px !important;
-        transition: background 0.2s ease, transform 0.2s ease !important;
-      }
-      .rr-interactive-bar:hover, .rr-interactive-bar:active {
-        background: #e2e8f0 !important;
-        transform: translateX(4px) !important;
-      }
-
     </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
@@ -999,7 +356,6 @@
             <div class="rr-card">
               <h3>How to use</h3>
               <p>Mark indicators as demonstrated when the candidate has already shown the behaviour. Any item left unselected highlights a potential gap for future development.</p>
-              <div class="rr-small-note">This version avoids external frameworks, build steps, and CDN assets so it stays portable for Brightspace-friendly HTML delivery.</div>
             </div>
           </div>
 
